@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>誰偷了金鏟子?</title>
+</head>
+<body>    
+    <canvas id="myCanvas" width="900" height="600">網頁遊戲程式設計</canvas>
+
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: auto;
+            display: block;
+            margin-top: 50px;
+        }
+    </style>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        var Btn=document.getElementById("btn");
+       
+        //載入圖像
+        var index_image = new Image();
+        index_image.src = "img/09-蘋果園/first_bg.png";
+        var farmer_image = new Image();
+        farmer_image.src = "img/09-蘋果園/farmer.png";
+        var return_map = new Image();
+        return_map.src = "img/09-蘋果園/returnmap.png";
+        var intro_image = new Image();
+        intro_image.src = "img/09-蘋果園/intro.png"
+        
+        const play_image = new Image();
+        const start_image = new Image();
+
+        let flag = false;
+        let map = false;
+        let intro = false;
+        let start = false;
+        //play hover效果
+        function play(){
+            play_image.src = "img/09-蘋果園/play01.png";
+            ctx.drawImage(play_image,630,305,150,114);
+            
+
+            canvas.addEventListener('mousemove',function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                console.log(playY);
+                //判斷指標是否在"play"物件上
+                if(playX>640 && playX<770 && playY>315 && playY<410 && intro == false){
+                     console.log("move");
+                    flag = true;
+                }
+                else{
+                    flag = false;
+                    
+                }
+                //判斷指標是否在"返回地圖"物件上
+                if(playX>65 && playX<160 && playY>510 && playY<535){
+                    map = true;
+                }
+                else{
+                    map = false;
+                }
+                play_image.src = flag ? "img/09-蘋果園/play02.png" : "img/09-蘋果園/play01.png";
+                
+                if(map == true ||　flag == true && intro == false){
+                    canvas.style.cursor = "pointer";
+                }
+                else{
+                    canvas.style.cursor = "unset";
+                }
+                // canvas.style.cursor = map ? "pointer" : "unset";
+                // canvas.style.cursor = flag ? "pointer" : "unset";
+                drawInfo();
+
+                //play點擊事件
+                console.log(intro);
+                 if(intro == true){
+                    ctx.clearRect(0,0,canvas.width,canvas.height);
+                    drawIntro();
+                    play_intro();
+                 }
+            });
+
+            canvas.onclick = function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                if(playX>640 && playX<770 && playY>315 && playY<410){
+                    console.log("click");
+                    intro = true;
+                     play_intro();
+                }
+               
+             }
+
+
+        }
+
+        let sHover = false;
+        var linkText = "index.html";
+        function play_intro(){
+
+            
+            start_image.src = "img/09-蘋果園/play01.png";
+            
+
+            canvas.addEventListener('mousemove',function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                console.log(playX);
+                //判斷指標是否在"play"物件上
+                if(playX>545 && playX<655 && playY>370 && playY<445){
+                     console.log(sHover);
+                    sHover = true;
+                }
+                else{
+                    sHover = false;
+                    
+                }
+                start_image.src = sHover ? "img/09-蘋果園/play02.png" : "img/09-蘋果園/play01.png";
+                canvas.style.cursor = sHover ? "pointer" : "unset";
+                drawIntro();
+            });
+
+            canvas.onclick = function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                if(playX>545 && playX<655 && playY>370 && playY<445){
+                    console.log("click");
+                    start = true;
+                }
+               
+            }
+
+            if(start == true){
+                window.location = linkText;
+             }
+
+        }
+
+        function drawInfo(){
+            ctx.drawImage(index_image,0,0,canvas.width,canvas.height); 
+            ctx.drawImage(farmer_image,0,0,canvas.width,canvas.height);
+            ctx.drawImage(return_map,65,510,99,25);             
+            ctx.drawImage(play_image,630,305,150,114);
+        }
+        function drawIntro(){
+            ctx.drawImage(index_image,0,0,canvas.width,canvas.height);
+            ctx.drawImage(intro_image,0,0,canvas.width,canvas.height);
+            ctx.drawImage(start_image,540,360,125,95);
+        }
+
+       
+                
+
+        window.onload=function(){ 
+
+            drawInfo();
+            play();  
+            //play_intro();
+            //console.log(intro);
+            
+        }
+        
+
+    </script>
+</body>
+</html>

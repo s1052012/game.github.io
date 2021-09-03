@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>誰偷了金鏟子?</title>
+</head>
+<body>    
+    <canvas id="myCanvas" width="1000" height="666">網頁遊戲程式設計</canvas>
+
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: auto;
+            display: block;
+            margin-top: 35px;
+        }
+    </style>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        var Btn=document.getElementById("btn");
+       
+        //載入圖像
+        var index_image = new Image();
+        index_image.src = "img/04-封面/封面-03.png";
+        var hand_image = new Image();
+        hand_image.src = "img/04-封面/action_hand.png";
+        var logo_image = new Image();
+        logo_image.src = "img/04-封面/封面-04.png";
+        const play_image = new Image();
+
+        let flag = false;
+        //play hover效果
+        function play(){
+            play_image.src = "img/04-封面/play01.png";
+            ctx.drawImage(play_image,660,295,150,114);
+            
+
+            canvas.addEventListener('mousemove',function(e){
+
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                //console.log(playY);
+                if(playX>670 && playX<820 && playY>270 && playY<380){
+                     console.log("move");
+                    flag = true;
+                }
+                else{
+                    flag = false;
+                    
+                }
+                play_image.src = flag ? "img/04-封面/play02.png" : "img/04-封面/play01.png";
+                canvas.style.cursor = flag ? "pointer" : "unset";
+                drawInfo();
+            });
+
+        }
+
+        var animation=null;;
+        //動畫圖片起始座標，因為有三張圖，所以儲存三個起始座標
+        var frames=[[0,0],[90,0],[340,0]]
+        //定義每幀圖像的寬度高度
+        var fWidth=32,fHeight=32;
+        //目前圖像指標
+        var fIndex=0;
+        //尋找canvas的中心點
+        var cX=canvas.width/2,cY=canvas.height/2;
+        function hand_path(){
+            // for(var i=1;i<100;i++){
+            //     for(var j=0;j<i;j++){
+            //         ctx.drawImage(hand_image,340+i,90+j,148.5,193);
+
+            //         ctx.clearRect(hand_image,340+i-1,90+j-1,148.5,193)
+            //     }
+            // }
+            
+           
+             ctx.clearRect(0,0,canvas.width,canvas.height);
+            //ctx.drawImage(hand_image,frames[fIndex][0],frames[fIndex][1],fWidth,fHeight,cX-32,cY-32,fWidth*2.fHeight*2);
+            //ctx.fillRect(cX,cY/2,5,5);
+            ctx.drawImage(hand_image,frames[fIndex][0],frames[fIndex][1],148.5,193);
+            fIndex++;
+            if(fIndex>=frames.length){
+                fIndex=0;
+            }
+        }
+        var start = false;
+        function hand_animation(){
+            //start = true;
+            if(!start){
+                
+                animation = setInterval(hand_path,200);
+            }
+            else{
+                clearInterval(animation);
+            }
+           
+        }
+
+        function drawInfo(){
+           
+            //ctx.drawImage(hand_image,340,90,148.5,193);
+            
+            
+            ctx.drawImage(play_image,660,295,150,114);
+
+        }
+
+    var num = 0;
+    var rotate_change = 0;
+
+    var rotate_rect = setInterval(function(){
+          ctx.clearRect(0, 0, 200, 200);
+          //drawInfo();
+           ctx.drawImage(index_image,0,0,canvas.width,canvas.height);
+          if(num==0){
+            rotate_change = -1;//負轉
+          }
+          else if(num==-45){
+            rotate_change = 1;//正轉
+          }
+          num += rotate_change; //旋轉方向累加
+
+          ctx.save();
+          ctx.translate(480, 250);
+          ctx.rotate(num * Math.PI/180);
+          ctx.translate(-480, -250);
+          ctx.beginPath(); 
+          ctx.drawImage(hand_image,335,83,148.5,193);
+          //ctx.rect(340,210,120, 40); 
+          ctx.fill();
+          ctx.restore(); 
+
+          ctx.drawImage(logo_image,0,0,canvas.width,canvas.height);
+          ctx.drawImage(play_image,660,295,150,114);
+           
+    },20);
+    var stop = function(){
+      clearInterval(rotate_rect);
+    }
+            
+
+        window.onload=function(){           
+            play();
+            //drawInfo();
+            //hand_animation();
+        }
+        //hand_animation();
+       
+        // var start=false;
+        // var animation=null;;
+        // //動畫圖片起始座標，因為有三張圖，所以儲存三個起始座標
+        // var frames=[[0,0],[32,0],[64,0]]
+        // //定義每幀圖像的寬度高度
+        // var fWidth=32,fHeight=32;
+        // //目前圖像指標
+        // var fIndex=0;
+        // //尋找canvas的中心點
+        // var cX=canvas.width/2,cY=canvas.height/2;
+        
+        //Btn.onclick=function(){btnEvent();}
+
+        // function btnEvent(){
+        //     if(!start){
+        //         animation=setInterval(drawing,100);//setInterval計時器
+        //         Btn.value="停止";
+        //         start=true;
+        //     }
+        //     else{
+        //         Btn.value="開始";
+        //         clearInterval(animation);//clearInterval清除計時器
+        //         start=false;
+        //     }
+        // }
+
+
+        
+       // function drawing(){
+       //      console.log(111);
+       //      ctx.clearRect(0,0,canvas.width,canvas.height);
+       //      ctx.drawImage(img,frames[fIndex][0],frames[fIndex][1],fWidth,fHeight,cX-32,cY-32,fWidth*2.fHeight*2);
+       //      //ctx.fillRect(cX,cY/2,5,5);
+       //      fIndex++;
+       //      if(fIndex>=frames.length){
+       //          fIndex=0;
+       //      }
+           
+       //  }
+       
+
+    </script>
+</body>
+</html>

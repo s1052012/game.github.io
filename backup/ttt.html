@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>誰偷了金鏟子?</title>
+</head>
+<body>
+    <div><img id="cover" src="img/04-封面/cover.png" style="display: none;"></div>
+    <div></div>
+    <!-- <img id="play" onmouseover ="" src= "img/04-封面/play01.png" style="display: none;"> -->
+
+   <!-- <div><img id="play2" src="img/04-封面/play02.png" style="display: none;"></div> -->
+    <!-- <div><img id="play" src="img/04-封面/play01.png" style="display: none;"></div> -->
+    
+    <canvas id="myCanvas" width="1000" height="600">網頁遊戲程式設計</canvas>
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: auto;
+            display: block;
+            margin-top: 65px;
+        }
+
+
+    </style>
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        var Btn=document.getElementById("btn");
+
+        var move=false;
+        
+
+         //載入圖像
+        //var play_image = document.getElementById("play");
+        var play_image = new Image();
+        play_image.src = "img/04-封面/play01.png";
+        // //繪製圖像
+        // ctx.drawImage(play_image,670,270,150,110);
+
+        //  play_image.onclick=function(){btnEvent();}
+
+        
+        
+        function index(){
+            //載入圖像
+            var index_image = document.getElementById("cover");
+            //index_image.src = "img/04-封面/cover.png";
+            //繪製圖像
+            ctx.drawImage(index_image,0,0,canvas.width,canvas.height);
+        }
+
+        // function play(){
+        //     var play_image = document.getElementById("play");
+            
+        //     var board = {
+        //         x:670,
+        //         y:270,
+        //         h:110,
+        //         w:150,
+        //     }
+           
+        //    //繪製圖像
+        //     ctx.drawImage(play_image,board.x,board.y,board.w,board.h);
+        //     console.log(play_image.x);
+
+           
+           
+        // }
+
+        // function initial(){
+        //     console.log("none");
+        //     //載入圖像
+        //     var play_image = new Image();
+        //     play_image.src = "img/04-封面/play01.png";
+        //     //繪製圖像
+        //     ctx.drawImage(play_image,670,270,150,110);
+        // }
+        
+        // function start(){
+        //     console.log("hover");
+        //     //載入圖像
+        //     var play_image = new Image();
+        //     play_image.src = "img/04-封面/play02.png";
+        //     //繪製圖像
+        //     ctx.drawImage(play_image,670,270,150,110);
+             
+        // }
+        
+        
+
+        window.onload=function(){
+            index();
+            ctx.drawImage(play_image,670,270,150,110);
+            canvas.onclick=function(){btnEvent();}
+           // play();
+           // start(0);
+            // canvas.addEventListener('mousemove',function(e){
+            //     let playX = e.clientX - canvas.getBoundingClientRect().left;
+            //     let playY = e.clientY - canvas.getBoundingClientRect().top;
+            //     if(playX>670 && playX<820 && playY>270 && playY<380){
+            //         //ctx.globalCompositeOperation = "destination-out";
+            //         //ctx.clearRect(670,270,150,110);
+            //         start(1);
+            //         drawInfo();
+            //     }
+            //     else{
+            //         start(0);
+            //         drawInfo();
+            //     }
+            // });
+         
+           
+        }
+           // var open = document.getElementById("open");
+        // function start(x){
+        //     if(x == 0){
+        //         //載入圖像
+        //         //var play_image = document.getElementById("play");
+        //         play_image.src = "img/04-封面/play01.png";
+        //         //繪製圖像
+                
+        //         //ctx.drawImage(play_image,670,270,150,110);
+               
+        //     }
+        //     else if(x == 1){
+        //         //載入圖像
+        //         //var play_image = document.getElementById("play2");
+        //         play_image.src = "img/04-封面/play02.png";
+        //         //繪製圖像
+        //         //ctx.globalCompositeOperation = "destination-out";
+        //         //ctx.drawImage(play_image,670,270,150,110);
+        //          console.log("move");
+        //     }
+            
+        // }
+
+       function btnEvent(){
+            console.log("hi");
+            move=true;
+            if(!move){
+                //animation=setInterval(drawing,100);//setInterval計時器
+                //Btn.value="停止";
+
+                console.log("hover");
+                //載入圖像
+                //var play_image = new Image();
+                play_image.src = "img/04-封面/play02.png";
+                //繪製圖像
+                ctx.drawImage(play_image,670,270,150,110);
+                move=true;
+            }
+            else{
+                // Btn.value="開始";
+                // clearInterval(animation);//clearInterval清除計時器
+
+                 console.log("none");
+                //載入圖像
+                //var play_image = new Image();
+                play_image.src = "img/04-封面/play01.png";
+                //繪製圖像
+                ctx.drawImage(play_image,670,270,150,110);
+                move=false;
+            }
+        }
+
+    </script>
+</body>
+</html>

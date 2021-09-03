@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	
+	 <canvas id="myCanvas" width="900" height="600">網頁遊戲程式設計</canvas>
+
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: auto;
+            display: block;
+            margin-top: 50px;
+        }
+    </style>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        var Btn=document.getElementById("btn");
+
+        
+        //總秒數每隔一秒就減一秒        
+       let allMs = 30001;
+       let nowMs = 0;
+       let countMs = 0;
+       let oldMs = new Date().getTime();
+       
+        // const countTime = {
+        // 	x: canvas.width/2,
+        // 	y:canvas.height/2,
+        // 	w: 170,
+        // 	h: 30,
+        // 	draw: function(){
+        // 		countT;
+        // 	}
+        // }
+        //載入圖像
+        var index_image = new Image();
+        index_image.src = "first_bg.png";//開始背景
+   		//設定初始畫面資訊
+        const bg = {
+            sx: 0,
+            sy: 0,
+            sw: index_image.width,
+            sh: index_image.height,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                ctx.drawImage(index_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+
+   		function draw(){
+            bg.draw();
+        }
+        function update(){
+           // getReady.update();
+           //countTime.update();
+        }
+        function loop(){
+            update();
+            draw();
+       
+            //requestAnimationFrame(loop);
+        }
+	      
+        loop();
+        var countT = setInterval(function(){
+    		if(nowMs<=allMs){
+	        	let newMs = new Date().getTime();	
+	        	//ctx.fillRect(0,0,canvas.width,canvas.height);        	
+	        	countMs = allMs - nowMs;
+
+	        	ctx.clearRect(0,0,canvas.width,canvas.height);
+	        	bg.draw();
+	        	console.log(Math.round(countMs/1000));
+	        	ctx.font = "900 48px 微軟正黑體";
+        		ctx.fillText(Math.round(countMs/1000),200,100,170,30);
+
+	        	nowMs = newMs - oldMs;
+        	}
+        },1000); 
+
+    </script>
+</body>
+</html>
