@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>movie</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0 auto;
+		}
+		canvas{
+			display: block;
+
+			border: 1px solid black;
+			margin-top: 50px;
+		}
+
+	</style>
+</head>
+<body>
+	<canvas id="myCanvas" width="1200" height="800"></canvas>
+    <script src="icon.js"></script>
+	<script type="text/javascript">
+		//背景圖
+		const BG = new Image();
+		BG.src = "img/05-前導動畫/movie-bg.png";
+
+		
+
+        //----------------------------連結設定-----------------------------
+        canvas.addEventListener("click", on_click, false);
+        //if the link has been clicked, go to link
+        function on_click(e) {
+            if (rememB)  {
+              window.location = iRememlinkText;//農場主人的記憶連結
+            }
+            if (mapB)  {
+              window.location = iMaplinkText;//農場主人的記憶連結
+            }
+            if (noteB)  {
+              window.location = iNotelinkText;//農場主人的記憶連結
+            }
+        }
+
+        function drawInfo(){
+        	ctx.drawImage(BG, 0, 0, 1200, 800, 0, 0, 1200, 800);
+            ctx.drawImage(iRemem, 0, 0, 262, 159, 253, 50, 132, 85);
+            ctx.drawImage(iMap, 0, 0, 186, 162, 425, 50, 94, 83);
+            ctx.drawImage(iNote, 0, 0, 175, 180, 570, 50, 88, 90);
+        }
+        window.onload=function(){    
+        	ctx.drawImage(BG, 0, 0, 1200, 800, 0, 0, 1200, 800); 
+        	remem();      
+            map();
+            note();
+        }
+		
+
+		
+	</script>
+	
+
+</html>

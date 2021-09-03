@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+<!-- video说明：属性应用
+ width="100%"
+ height="240px"  /*如果有封面，请设置高度*/
+ controls  /*这个属性规定浏览器为该视频提供播放控件*/  
+ style="object-fit:fill"  /*加这个style会让 Android / web 的视频在微信里的视频全屏，如果是在手机上预览，会让视频的封面同视频一样大小*/
+ webkit-playsinline="true"  /*这个属性是ios 10中设置可以让视频在小窗内播放，也就是不是全屏播放*/  
+ x-webkit-airplay="true"  /*这个属性还不知道作用*/ 
+ playsinline="true"  /*IOS微信浏览器支持小窗内播放*/ 
+ x5-video-player-type="h5" /*启用H5播放器,是wechat安卓版特性*/
+ x5-video-orientation="h5" /*播放器支付的方向，landscape横屏，portraint竖屏，默认值为竖屏*/
+ x5-video-player-fullscreen="true" /*全屏设置，设置为 true 是防止横屏*/
+ preload="auto" /*这个属性规定页面加载完成后载入视频*/ 
+ -->
+<video id="video" controls loop autoplay="" width='300' webkit-playsinline="true" x-webkit-airplay="true" playsinline="true" x5-video-player-type="h5" src='img/05-前導動畫/movie.mp4'></video>
+<button id="play" class="play">播放</button>
+<button id="pause" class="pause">暂停</button>
+<!-- <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script> -->
+<script>
+/*
+ * video视频转成canvas（兼容至IE8+）
+ * Author: tc   Created On: 2018-08-08
+ * 
+ *  使用方法：
+ *      var videoCanvas = new VideoToCanvas(videoDom);
+ *
+ *  对象的属性：
+ *      暂无。
+ *
+ *  对象的方法：
+ *      play       播放视频
+ *      pause      暂停视频
+ *      playPause  播放或暂停视频
+ *      change(src) 切换视频。参数src为切换的视频地址
+ */
+var VideoToCanvas = (function(window, document) {
+  function VideoToCanvas(videoElement) {
+    if(!videoElement) {return;}
+
+    var canvas = document.createElement('canvas');
+    canvas.width = videoElement.offsetWidth;
+    canvas.height = videoElement.offsetHeight;
+    ctx = canvas.getContext('2d');
+
+    var newVideo = videoElement.cloneNode(false);
+
+    var timer = null;
+
+    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+    var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+
+    function drawCanvas() {
+      ctx.drawImage(newVideo, 0, 0, canvas.width, canvas.height);
+      timer = requestAnimationFrame(drawCanvas);
+    }
+
+    function stopDrawing() {
+      cancelAnimationFrame(timer);
+    }
+
+    newVideo.addEventListener('play', function() {
+      drawCanvas();
+    },false);
+    newVideo.addEventListener('pause', stopDrawing, false);
+    newVideo.addEventListener('ended', stopDrawing, false);
+
+    videoElement.parentNode.replaceChild(canvas, video);
+
+    this.play = function() {
+      newVideo.play();
+    };
+
+    this.pause = function() {
+      newVideo.pause();
+    };
+
+    this.playPause = function() {
+      if(newVideo.paused) {
+        this.play();
+      } else {
+        this.pause();
+      }
+    };
+
+    this.change = function(src) {
+      if(!src) {return;}
+      newVideo.src = src;
+    };
+
+    this.drawFrame = drawCanvas;
+  }
+
+  return VideoToCanvas;
+
+})(window, document); 
+</script> 
+<script>
+  window.onload=function(){
+    var video = document.getElementById('video');
+    var videoCanvas = new VideoToCanvas(video);
+    var playClass = document.getElementById('play');
+    var pauseClass = document.getElementById('pause');
+
+    playClass.addEventListener("click",function(){
+      videoCanvas.play();
+    },false);
+    pauseClass.addEventListener("click",function(){
+      videoCanvas.pause();
+    },false);
+  }  
+</script>
+</body>
+</html>

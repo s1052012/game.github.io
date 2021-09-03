@@ -1,0 +1,108 @@
+body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,table,td,img,div{
+	margin:0;
+	padding:0;
+	border:0;
+}
+body{
+	color:#333; 
+	font-size:12px;
+	font-family:"Microsoft YaHei"
+}
+ul,ol{
+	list-style-type:none;
+}
+select,input,img,select{
+	vertical-align:middle;
+}
+input{
+	font-size:12px;
+}
+a{
+	text-decoration:none; 
+	color:#000;
+}
+a:hover{
+	color:#FFBD45; 
+	text-decoration:none;
+}
+.clear{
+	clear:both;
+}
+
+/* 大转盘样式 */
+.banner{
+	display:block;
+	width:55%;
+	margin-left:auto;
+	margin-right:auto;
+	margin-bottom: 20px;
+	margin-top: 30px
+}
+.banner .turnplate{
+	display:block;
+	width:100%;
+	position:relative;
+}
+.banner .turnplate canvas.item{
+	width:100%;
+}
+.banner .turnplate img.pointer{
+	position:absolute;
+	width:31.5%;
+	height:42.5%;
+	left:34.2%;
+	top:23.3%;
+}
+.banner .turnplate img.pointer:hover {
+	/*position:absolute;*/ 
+	width: 37%;
+	height: 48.5%; 
+	left:31.9%;
+	top:20%;
+}
+
+.banner .turnplate{
+	background-image:url(images/fun-03.png);
+	background-size:100% 100%;
+}
+
+
+#popWindow{ /*此行指定放置廣告的div */ 
+	width:500px; /*此行設定div的寬度*/ 
+	height:300px; /*此行設定div的高度*/ 
+	/*background:url(images/endbg-04.png) no-repeat; /*此行設定div的背景圖形*/ 
+	background-color: rgba(255,255,255,0.8);
+	background-size:100%;
+	box-shadow:5px 5px 10px black; /*此行設定div的外框陰影*/ 
+	border:2px gray solid; /*此行設定div的外框線條*/ 
+	border-radius:20px; /*此行設定div的外框圓角*/ 
+	position:absolute; /*此行設定div為不隨捲動而移動的模式*/ 
+	display: none;
+	top:42%;
+	left: 20%;
+}
+#popWindow button{
+	width: 40px;
+	height: 40px;
+	border-radius:10px;
+	position: absolute;
+	left: 91%;
+	top:3%;
+	background:url(popWindow.png) no-repeat; 
+}
+
+.title{
+	position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 13%;
+    font-size: 45px;
+}
+
+.content img{
+	width: 500px;
+	display: none;
+}
+
+
+

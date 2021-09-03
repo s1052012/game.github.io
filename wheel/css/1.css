@@ -1,0 +1,440 @@
+#logo
+        {
+            position: absolute;
+            left: 45%;
+            
+           
+            width: 300px;
+            height: 180px;
+        }
+ 
+#menu
+{
+    
+    width: 100%;
+    position: relative;
+    top: 50px;
+    left:0px;
+   /* background-color:darkseagreen  ;
+    /*background-color: burlywood;*/
+}
+
+#ulmenu{
+    /*background-image: url('images/menu-03.png');*/
+	list-style:none;
+	margin:0;
+	padding:0 0 1% 33%;
+	overflow:hidden;
+       
+           
+}
+#ulmenu li:first-child{
+	margin:0;
+    /*
+    position: absolute;
+    left: 0;
+    */
+}
+#ulmenu li.selected{
+    
+	/*background-color: gainsboro;*/
+}
+
+#ulmenu li{
+	float:left;
+	margin:0 0 0 0 41px;
+	text-align: center;
+	width:150px;
+	height:59px;
+        
+}
+ #ulmenu li a:hover,.dropdown:hover .dropbtn
+{
+	color:#5599FF; /*選單字被hover顏色*/
+}
+ #ulmenu li a{
+	text-decoration:none;
+	color:#888888; /*一開始顯示的選單字顏色*/
+	
+	font-size: 28px;
+	display: block;
+
+	margin: 15px 0 0;
+	text-transform:uppercase;
+	line-height:36px;
+	outline:none;
+     
+    /*left: 500px; */
+     
+}
+body
+{
+   /* background-color: #E6EBE0;*/
+    background-color: #ffffff;
+}
+.dropdown-content
+{
+    display: none;/*把一個物件完全的隱藏*/
+    position:absolute;/**/
+    background-color: rgba(244, 243, 241,0.5);
+ 
+    min-width: 50px;
+    box-shadow: 0px 8px 16px 0px rgba(248, 246, 237,0.5);
+    z-index: 1;
+    width: 200px;
+    padding: 2px;
+  }
+
+
+  /*下拉後a的樣式*/
+  .dropdown-content a{
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+  }
+  /*下拉後a被hover的樣式*/
+  .dropdown-content a:hover{
+   
+      background-size: 20px 20px;
+      color:#5599FF;  /*字顏色*/
+      
+     
+  }
+.dropdown:hover .dropdown-content{
+    display: block;
+  background-color: rgba(114,200,224,0.3); /*下拉出來的顏色*/
+  }
+   
+.block
+{
+    position: absolute;
+    background-color: rgba(255, 255, 255,0);
+    left: 430px;
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+    top: -240px;
+    
+}
+.block2 
+{
+    position: absolute;
+    background-color: rgba(255, 255, 255,0);
+    left: 630px;
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+    top: -240px;
+    animation: r 1s ease 0s infinite alternate;
+   
+}
+@keyframes r
+{
+    0%{transform: rotateZ(10deg);}
+  
+    100%{transform: rotateZ(-10deg);}
+    
+}
+
+.block3
+{
+    position: absolute;
+    background-color: rgba(255, 255, 255,0);
+    left: 790px;
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+    top: -225px;
+     animation: rr 1s ease 0s infinite alternate;
+}
+@keyframes rr
+{
+    0%{transform: rotateZ(15deg);}
+  
+    100%{transform: rotateZ(-15deg);}
+    
+}
+#zz
+{
+    position: relative;
+    height: 100px;
+
+}
+#area2
+{
+    /*background-color:#FFBB66;*/
+    width: 100%;
+    position: absolute;
+    top: 1350px;
+    left: 0;
+    height: 550px;
+}
+
+#area3
+{
+    /*background-color:#FFDDAA;*/
+    width: 100%;
+    position: absolute;
+    top: 800px;
+    left: 0;
+    height: 550px;
+
+}
+
+#area4
+{
+    /*background-color:#FFC8B4;*/
+    width: 100%;
+    position: absolute;
+    top: 1910px;
+    left: 0;
+    height: 550px;
+
+}
+
+#vine
+{
+    top: 350px;
+}
+
+#leaf
+{
+    top: 550px;
+    left: 410px;
+}
+
+#aa
+{
+    width: 200px;
+    height: 200px;
+}
+
+
+#ani
+{
+    height: 200px;
+    width: 200px;
+}
+
+figure
+{
+     height: 200px;
+    width: 200px;
+}
+
+
+
+
+/*圖片翻轉*/
+
+.flip-container {
+    perspective: 1000;
+    
+}
+
+/* 鼠标放上去的时候翻转 */
+.flip-container:hover .flipper, .flip-container.hover .flipper {
+    transform: rotateY(180deg);
+}
+
+.flip-container, .front, .back {
+    width: 300px;
+    height: 300px;
+}
+
+/* 翻转速度设置 */
+.flipper {
+    transition: 1s;
+    transform-style: preserve-3d;
+top: 120px;
+    left: 25px;
+    position: relative;
+}
+
+/* 翻转页的时候隐藏背面 */
+.front, .back {
+    backface-visibility: hidden;
+ 
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* 前面板放在上面 */
+.front {
+    z-index: 2;
+    /* for firefox 31 */
+    transform: rotateY(0deg);
+   
+}
+
+/* 背面初始的时候隐藏 */
+.back {
+    transform: rotateY(180deg);
+    /*background-color: white;*/
+}
+
+
+
+.word
+{
+    color: dodgerblue; 
+    line-height: 200px;  
+    font-size: 2rem;
+      position: absolute;  
+    left: 110px;
+}
+
+        /*------幻燈片-------*/
+ .slider_container
+       
+{
+    margin: 30px auto;
+    width: 400px;
+    height: 280px;
+    position: relative;
+        
+    /*border-color: #fff;
+            
+    border-bottom-width: 100px;
+    background-color: #f5f5f5;
+    box-shadow: #666 0 0 5px;
+    */
+}
+.slider_container div
+ {
+            
+    position: absolute;
+    top: -630px;
+    left: -80px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+      /*當圖片數量增加，影片長度需更改，變為5s*圖片數量*/
+    -webkit-animation: round 20s linear infinite;
+            animation: round 20s linear infinite;
+}
+        @-webkit-keyframes round {
+    4% {
+        opacity: 1;
+        filter: alpha(opacity=100);
+        /* 0 - 1秒 淡入*/
+    }
+    20% {
+        opacity: 1;
+        filter: alpha(opacity=100);
+        /* 1- 5秒靜止*/
+    }
+    24% {
+        opacity: 0;
+        filter: alpha(opacity=0);
+        /* 5-6秒淡出*/
+    }
+}
+@keyframes round 
+{
+    4% {
+        opacity: 1;
+        filter: alpha(opacity=100);
+        /* 0 - 1秒 淡入*/
+    }
+    20% {
+        opacity: 1;
+        filter: alpha(opacity=100);
+        /* 1- 5秒靜止*/
+    }
+    24% {
+        opacity: 0;
+        filter: alpha(opacity=0);
+        /* 5-6秒淡出*/
+    }
+}
+        
+ 
+.slider_container div:nth-child(4) 
+{
+    -webkit-animation-delay: 0s;
+            animation-delay: 0s;
+}
+
+.slider_container div:nth-child(3)
+{
+    -webkit-animation-delay: 5s;
+            animation-delay: 5s;
+}
+
+.slider_container div:nth-child(2) 
+{
+    -webkit-animation-delay: 10s;
+            animation-delay: 10s;
+}
+
+.slider_container div:nth-child(1)
+{
+    -webkit-animation-delay:  15s;
+            animation-delay:  15s;
+}
+    
+ .slider_container span
+
+{    
+    color: #000;
+    background: #fff;
+    position: absolute;
+    left: 0%;
+    top: 580px;
+    width: 400px;
+    height: 100px;
+    font-size: 30px;
+    text-align: center;
+    line-height: 100px;
+    -webkit-transform:scaleY(0);
+        -ms-transform:scaleY(0);
+            transform:scaleY(0);
+    -webkit-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+}
+        
+.slider_container:hover div
+ 
+        {
+    -webkit-animation-play-state: paused;
+            animation-play-state: paused;
+        }
+        
+.slider_container img
+        
+        {
+            position: absolute;
+            height: 550px;
+            width: 1000px;
+           
+          top: 300px;
+            
+        }
+
+.footer
+{
+    position: relative;
+    text-align: center;
+    width: 100%;
+    background-color: #00314F;
+
+}
+
+#foot
+{
+    color: white;
+}
+.logohome{
+    position: fixed;
+    top:5px;
+    padding:0 0 0 88%;
+
+}
+.logohome img{
+    padding:20px;
+    
+    width: 150px;
+}

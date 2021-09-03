@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>canvas</title>
+  <style type="text/css">
+    *{
+      margin: 50 auto;/*畫面留邊20px*/
+    }
+  </style>
+</head>
+<body onload="draw()">
+  <canvas id="myCanvas" width="1200" height="800">Canvas not supported.</canvas>
+  <script type="text/javascript">
+    var canvas = document.getElementById("myCanvas");
+    var ctx=canvas.getContext("2d");
+    var applelinkText="apple_game.html";
+
+    var AlinkX=570;
+    var AlinkY=435;
+    var AlinkWidth=165;
+    var AlinkHeight=115;
+    var appleInLink = false;
+
+    //蘋果園
+        const apple = new Image();
+        apple.src = "img/07-農場地圖/map-game01.png";
+     
+    function draw(){
+    
+
+      
+      // check if supported
+      if(canvas.getContext){
+        ctx.drawImage(apple, 0, 0, 320, 235, 570, 435, 165, 115);
+        //add mouse listeners
+        canvas.addEventListener("mousemove", on_mousemove, false);
+        canvas.addEventListener("click", on_click, false);
+      }
+    }
+     
+    //check if the mouse is over the link and change cursor style
+    function on_mousemove (ev) {
+      var x, y;
+      // Get the mouse position relative to the canvas element.
+      if (ev.layerX || ev.layerX) { //for firefox
+        x = ev.layerX;
+        y = ev.layerY;
+      }
+      x-=canvas.offsetLeft;
+      y-=canvas.offsetTop;
+      //is the mouse over the link?
+      if(x>=AlinkX && x <= (AlinkX + AlinkWidth) &&
+         y>=AlinkY && y<= (AlinkY+AlinkHeight)){
+          document.body.style.cursor = "pointer";
+          appleInLink=true;
+      }
+      else{
+          document.body.style.cursor = "";
+          appleInLink=false;
+      }
+    }
+     
+    //if the link has been clicked, go to link
+    function on_click(e) {
+      if (appleInLink)  {
+        window.location = applelinkText;
+      }
+    }
+  </script>
+</body>
+</html>

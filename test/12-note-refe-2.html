@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>movie</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0 auto;
+		}
+		canvas{
+			display: block;
+
+			border: 1px solid black;
+			margin-top: 50px;
+		}
+
+	</style>
+</head>
+<body>
+	<canvas id="myCanvas" width="1200" height="800"></canvas>
+    <!-- <script src="icon.js"></script> -->
+	<script type="text/javascript">
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        //背景圖
+        const BG = new Image();
+        BG.src = "img/12-記事本/n-1note-refe.png";
+
+        //結束推論圖
+        const endRe = new Image();
+        endRe.src = "img/12-記事本/n-3infe-1ok.png";
+        var endRelinkText="13-game-end1.html";
+
+        //打勾圖
+        const tick = new Image();
+        tick.src = "img/12-記事本/n-3infe-1tick.png";
+        const ok = new Image();
+        ok.src = "img/12-記事本/n-3infe-1tick.png";
+        boxWidth=42;
+        boxHeight=42;
+
+        who1X=300;
+        who1Y=310;
+        who1Width=boxWidth;
+        who1Height=boxHeight;
+        
+
+        let endReB = false;
+        //play hover效果  //------------------------結束推論圖-------------------------------
+        function endRefe(){
+                //ctx.drawImage(圖片, 圖片的x, 圖片的y, 切割的寬度, 切割的高度, 放到畫布的x, 放到畫布的y, 放到畫布的圖片寬度, 放到畫布的圖片高度);
+            ctx.drawImage(endRe, 0, 0, 475, 305, 860, 90, 210, 120);
+            canvas.addEventListener('mousemove',function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                if(playX>860 && playX<1070 && playY>90 && playY<230){
+                     console.log("endReMve");
+                    endReB = true;
+                }
+                else{
+                    endReB = false;
+                }
+                endRe.src = endReB ? "img/12-記事本/n-3infe-1ok-hover.png" : "img/12-記事本/n-3infe-1ok.png";
+                canvas.style.cursor = endReB ? "pointer" : "unset";
+
+                drawInfo();
+            });
+
+        }
+
+        //----------------------------連結設定-----------------------------
+        canvas.addEventListener("mousemove", on_mousemove);
+        who1Pic=false;
+        canvas.addEventListener("click", on_click, false);
+        //if the link has been clicked, go to link
+        function on_mousemove (ev) {
+            let x = ev.x - canvas.getBoundingClientRect().left;
+            let y = ev.y - canvas.getBoundingClientRect().top;
+              //-----------------------who1連結----------------------
+            if(who1Pic==false && x>=who1X && x <= (who1X + who1Width) &&
+                y>=who1Y && y<= (who1Y+who1Height)){
+                document.body.style.cursor = "pointer";
+            }
+            else{
+                document.body.style.cursor = "";
+            }
+              
+        }
+
+        function on_click(ev) {
+            let x = ev.x - canvas.getBoundingClientRect().left;
+            let y = ev.y - canvas.getBoundingClientRect().top;
+            if(who1Pic==false && x>=who1X && x <= (who1X + who1Width) &&
+                y>=who1Y && y<= (who1Y+who1Height)){
+                document.body.style.cursor = "pointer";
+                who1Pic=true;
+                console.log("click");
+            }
+            else{
+                document.body.style.cursor = "";
+                who1Pic=false;
+            }
+
+
+            if (endReB)  {
+              window.location = endRelinkText;//農場主人的記憶連結
+            }
+
+            if(who1Pic){
+                who1Picture.draw();
+            }
+            
+        }
+
+        const who1Picture={
+            draw: function(){
+                ctx.drawImage(tick, 0, 0, 95, 105, who1X, who1Y, who1Width, who1Height);
+            }
+        }
+
+        function drawInfo(){
+        	ctx.drawImage(BG, 0, 0, 2395, 1598, 0, 0, 1200, 800);
+            ctx.drawImage(endRe, 0, 0, 475, 305, 860, 90, 210, 120);
+        }
+        window.onload=function(){    
+        	ctx.drawImage(BG, 0, 0, 2395, 1598, 0, 0, 1200, 800);
+            endRefe();
+            //who1Picture.draw();
+            
+        }
+		
+
+		
+	</script>
+	
+
+</html>
