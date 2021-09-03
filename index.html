@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>誰偷了金鏟子?</title>
+</head>
+<body>    
+    <canvas id="myCanvas" width="900" height="600">網頁遊戲程式設計</canvas>
+    <script type="text/javascript" src="setting.js"></script>
+
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: auto;
+            display: block;
+            margin-top: 50px;
+        }
+    </style>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        var Btn=document.getElementById("btn");
+       
+        //載入圖像
+        var index_image = new Image();
+        index_image.src = "img/04-封面/封面-03.png";
+        var hand_image = new Image();
+        hand_image.src = "img/04-封面/action_hand.png";
+        var logo_image = new Image();
+        logo_image.src = "img/04-封面/封面-04.png";
+        const play_image = new Image();
+
+        let flag = false;
+        //play hover效果
+        function play(){
+            play_image.src = "img/04-封面/play01.png";
+            ctx.drawImage(play_image,600,265,150,114);
+            
+
+            canvas.addEventListener('mousemove',function(e){
+
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                //console.log(playX);
+                if(playX>610 && playX<740 && playY>275 && playY<370){
+                     console.log("move");
+                    flag = true;
+                }
+                else{
+                    flag = false;
+                    
+                }
+                play_image.src = flag ? "img/04-封面/play02.png" : "img/04-封面/play01.png";
+                canvas.style.cursor = flag ? "pointer" : "unset";
+                drawInfo();
+            });
+            canvas.addEventListener('click',function(e){
+
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                //console.log(playX);
+                if(playX>610 && playX<740 && playY>275 && playY<370){
+                     
+                    window.location = "06-turn.html";
+                }
+                
+            });
+
+        }
+
+        
+        function drawInfo(){
+            ctx.drawImage(play_image,600,265,150,114);
+        }
+
+        var num = 0;
+        var rotate_change = 0;
+
+        var rotate_rect = setInterval(function(){
+              ctx.clearRect(0, 0, 200, 200);
+              //放背景圖
+               ctx.drawImage(index_image,0,0,canvas.width,canvas.height);
+              if(num==0){
+                rotate_change = -1;//負轉
+              }
+              else if(num==-45){
+                rotate_change = 1;//正轉
+              }
+              num += rotate_change; //旋轉方向累加
+
+              //設定手臂擺動角度
+              ctx.save();
+              ctx.translate(430, 230);
+              ctx.rotate(num * Math.PI/180);
+              ctx.translate(-430, -230);
+              ctx.beginPath(); 
+              ctx.drawImage(hand_image,290,60,148.5,193);
+              ctx.restore(); 
+
+              //放logo圖
+              ctx.drawImage(logo_image,0,0,canvas.width,canvas.height);
+              //放play按鈕
+              ctx.drawImage(play_image,600,265,150,114);
+               
+        },20);
+
+        canvas.addEventListener("click",function(e){
+            let playX = e.clientX - canvas.getBoundingClientRect().left;
+            let playY = e.clientY - canvas.getBoundingClientRect().top;
+
+            gameStart_audio.play();
+          });
+        
+        let sound = false;
+
+        canvas.onmousedown=function (e) {
+
+            
+            canvas.onmousemove = function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+                //音量調節設定
+                if(playX>350 && playX<setBar.max && playY > setBar.dy && playY < setBar.dy +setBar.dh){
+                    setBar.dx = playX;
+                    // sound = true;
+                }
+                else{
+                    // sound = false;
+                }
+                
+                if(playX>setBar_BG.min && playX<setBar_BG.max && playY > setBar_BG.dy && playY < setBar_BG.dy +setBar.dh){
+                    setBar_BG.dx = playX;
+                    sound = true;
+                }
+                else{
+                    sound = false;
+                }
+                
+            };
+            canvas.onmouseup = function(){
+                canvas.onmousemove = null;
+                canvas.onmouseup = null;
+            };
+        };
+
+        function soundMgt(){
+            if(sound){
+                gameStart_audio.play();
+                gameStart_audio.addEventListener("ended",playEndedHandler,false);
+            }
+           
+            
+            
+        }
+        function playEndedHandler(){
+            gameStart_audio.play();
+        }
+        
+        
+        window.onload=function(){           
+            play();
+            soundMgt();
+        }
+        
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>誰偷了金鏟子?</title>
+</head>
+<body>    
+    <canvas id="myCanvas" width="900" height="600">網頁遊戲程式設計</canvas>
+    
+    <script type="text/javascript" src="setting.js"></script>
+    
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: auto;
+            display: block;
+            margin-top: 50px;
+        }
+    </style>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        var Btn=document.getElementById("btn");
+
+        let flag = false;
+        let map = false;
+        let start = false;
+        let sHover = false;
+
+        var maplinkText="07-map.html";
+       
+        //載入圖像
+        const index_image = new Image();
+        index_image.src = "img/11-農場倉庫/first_bg.png";//開始背景
+        // const farmer_image = new Image();
+        // farmer_image.src = "img/09-蘋果園/farmer.png";//人物
+        
+        const play_image = new Image();
+        play_image.src = "img/00-遊戲元件/play01.png";//play鍵
+        const leftmap_image = new Image();
+        leftmap_image.src = "img/00-遊戲元件/leftmap.png";//返回地圖(向左)
+        const rightmap_image = new Image();
+        rightmap_image.src = "img/00-遊戲元件/rightmap.png";//返回地圖(向右)
+
+        const intro_image = new Image();
+        intro_image.src = "img/11-農場倉庫/rule.png"//玩法介紹
+        const start_image = new Image();
+        start_image.src = "img/00-遊戲元件/go01.png";//start鍵
+
+        const gameBG_image = new Image();
+        gameBG_image.src = "img/11-農場倉庫/gameBG.png";//遊戲時背景
+
+        //遊戲物件們
+        const find11_image = new Image();
+        find11_image.src = "img/11-農場倉庫/find11.png";
+        const find12_image = new Image();
+        find12_image.src = "img/11-農場倉庫/find12.png";
+        const find21_image = new Image();
+        find21_image.src = "img/11-農場倉庫/find21.png";
+        const find22_image = new Image();
+        find22_image.src = "img/11-農場倉庫/find22.png";
+        const find31_image = new Image();
+        find31_image.src = "img/11-農場倉庫/find31.png";
+        const find32_image = new Image();
+        find32_image.src = "img/11-農場倉庫/find32.png";
+        const find41_image = new Image();
+        find41_image.src = "img/11-農場倉庫/find41.png";
+        const find42_image = new Image();
+        find42_image.src = "img/11-農場倉庫/find42.png";
+        const find51_image = new Image();
+        find51_image.src = "img/11-農場倉庫/find51.png";
+        const find52_image = new Image();
+        find52_image.src = "img/11-農場倉庫/find52.png";
+        const find61_image = new Image();
+        find61_image.src = "img/11-農場倉庫/find61.png";
+        const find62_image = new Image();
+        find62_image.src = "img/11-農場倉庫/find62.png";
+        const find71_image = new Image();
+        find71_image.src = "img/11-農場倉庫/find71.png";
+        const find72_image = new Image();
+        find72_image.src = "img/11-農場倉庫/find72.png";
+        const find81_image = new Image();
+        find81_image.src = "img/11-農場倉庫/find81.png";
+        const find82_image = new Image();
+        find82_image.src = "img/11-農場倉庫/find82.png";
+
+        const gameover_image = new Image();
+        gameover_image.src = "img/00-遊戲元件/gameover.png";//game over圖
+        const gameoverBG_image = new Image();
+        gameoverBG_image.src = "img/11-農場倉庫/finishBG.png";//遊戲結束背景
+        const finishNormal_image = new Image();
+        finishNormal_image.src = "img/11-農場倉庫/finishNormal.png";//普通提示
+        const finishGood_image = new Image();
+        finishGood_image.src = "img/11-農場倉庫/finishGood.png";//最佳提示
+        const shineNormal_image = new Image();
+        shineNormal_image.src = "img/00-遊戲元件/shineNormal.png";//普通特效
+        const shineGood_image = new Image();
+        shineGood_image.src = "img/00-遊戲元件/shineGood.png";//普通特效
+
+        
+
+
+        //遊戲畫面變更計算
+        const status = {
+            current: 0,
+            getReady: 0,
+            gameIntro: 1,
+            game: 2,
+            gameOver: 3
+        }
+        //總秒數每隔一秒就減一秒        
+       let allMs = 30001;
+       var nowMs = 0;
+       var countMs = 30001;
+       let oldMs = new Date().getTime();
+       var delTime = 0;
+       //計時器設定
+         var Time = setInterval(function(){
+            if(countMs > 999 && status.current == status.game && !stopping){
+                let newMs = new Date().getTime();   
+                         
+                countMs = allMs - nowMs - delTime;
+
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                console.log("time:",Math.round(countMs/1000));
+                
+
+                nowMs = newMs - oldMs;
+            }
+            else if(stopping && status.current == status.game && countMs > 999){
+                oldMs += 1000;
+                console.log("oldMs",oldMs);
+            }
+            else{
+                if(countMs > 999)
+                {
+                    oldMs = new Date().getTime();
+                }
+            }
+        },1000); 
+       
+       
+       
+
+        //設定初始畫面資訊
+        const bg = {
+            sx: 0,
+            sy: 0,
+            sw: 5000,
+            sh: 3333,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                ctx.drawImage(index_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+        
+        const mapList = {
+            sx: 0,
+            sy: 0,
+            sw: 596,
+            sh: 154,
+            dx: 65,
+            dy: 510,
+            dw: 99,
+            dh: 25,
+            fx: 685,
+            fy: 473,
+            fw: 238.4,
+            fh: 61.6,
+            draw: function(){
+                if(status.current == status.getReady){
+                    ctx.drawImage(leftmap_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+                else if(status.current == status.gameOver){
+                    ctx.drawImage(rightmap_image,this.sx,this.sy,this.sw,this.sh,this.fx,this.fy,this.fw,this.fh);
+                }
+            }
+        }
+        const getReady = {
+            sx: 0,
+            sy: 0,
+            sw: 452,
+            sh: 343,
+            dx: 655,
+            dy: 415,
+            dw: 150.6,
+            dh: 114.3,
+            draw: function(){
+                if(status.current == status.getReady)
+                    ctx.drawImage(play_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+
+        //設定介紹頁面資訊
+        const gameIntro = {
+            sx: 0,
+            sy: 0,
+            sw: 5000,
+            sh: 3333,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current == status.gameIntro)
+                    ctx.drawImage(intro_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+        const getStart = {
+            sx: 0,
+            sy: 0,
+            sw: 326,
+            sh: 244,
+            dx: 540,
+            dy: 360,
+            dw: 125,
+            dh: 95,
+            draw: function(){
+                if(status.current == status.gameIntro)
+                    ctx.drawImage(start_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+
+        //設定遊戲頁面資訊
+        const game = {
+            sx: 0,
+            sy: 0,
+            sw: 5000,
+            sh: 3333,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(gameBG_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+                
+            }
+        }
+        
+        const find11 = {
+            sx: 0,
+            sy: 0,
+            sw: 510,
+            sh: 141,
+            dx: ((canvas.width/4)+18.5)-56.6,
+            dy: 135,
+            dw: 120.2,
+            dh: 31.3,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find11_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find12 = {
+            sx: 0,
+            sy: 0,
+            sw: 510,
+            sh: 141,
+            dx: 603.3,
+            dy: 135,
+            dw: 113.3,
+            dh: 31.3,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find12_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find21 = {
+            sx: 0,
+            sy: 0,
+            sw: 173,
+            sh: 344,
+            dx: 260,
+            dy: 212,
+            dw: 38.4,
+            dh: 76.4,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find21_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find22 = {
+            sx: 0,
+            sy: 0,
+            sw: 235,
+            sh: 344,
+            dx: 658,
+            dy: 212,
+            dw: 52.2,
+            dh: 76.4,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find22_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find31 = {
+            sx: 0,
+            sy: 0,
+            sw: 147,
+            sh: 161,
+            dx: 325,
+            dy: 353,
+            dw: 32.6,
+            dh: 35.7,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find31_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find32 = {
+            sx: 0,
+            sy: 0,
+            sw: 141,
+            sh: 158,
+            dx: 740,
+            dy: 353,
+            dw: 31.3,
+            dh: 35.1,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find32_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find41 = {
+            sx: 0,
+            sy: 0,
+            sw: 330,
+            sh: 268,
+            dx: 380,
+            dy: 370,
+            dw: 66,
+            dh: 53.6,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find41_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find42 = {
+            sx: 0,
+            sy: 0,
+            sw: 330,
+            sh: 268,
+            dx: 795,
+            dy: 370,
+            dw: 66,
+            dh: 53.6,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find42_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find51 = {
+            sx: 0,
+            sy: 0,
+            sw: 45,
+            sh: 75,
+            dx: 280,
+            dy: 462,
+            dw: 9,
+            dh: 15,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find51_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find52 = {
+            sx: 0,
+            sy: 0,
+            sw: 45,
+            sh: 75,
+            dx: 695,
+            dy: 462,
+            dw: 9,
+            dh: 15,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find52_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find61 = {
+            sx: 0,
+            sy: 0,
+            sw: 131,
+            sh: 187,
+            dx: 195,
+            dy: 415,
+            dw: 26.2,
+            dh: 37.4,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find61_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find62 = {
+            sx: 0,
+            sy: 0,
+            sw: 131,
+            sh: 187,
+            dx: 608,
+            dy: 415,
+            dw: 26.2,
+            dh: 37.4,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find62_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find71 = {
+            sx: 0,
+            sy: 0,
+            sw: 109,
+            sh: 201,
+            dx: 203,
+            dy: 353,
+            dw: 24.2,
+            dh: 44.6,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find71_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find72 = {
+            sx: 0,
+            sy: 0,
+            sw: 126,
+            sh: 206,
+            dx: 615,
+            dy: 353,
+            dw: 28,
+            dh: 45.7,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find72_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find81 = {
+            sx: 0,
+            sy: 0,
+            sw: 163,
+            sh: 454,
+            dx: 52,
+            dy: 329,
+            dw: 32.6,
+            dh: 90.8,
+            draw: function(){
+                if(status.current == status.game)
+                    ctx.drawImage(find81_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+
+            }
+        }
+        const find82 = {
+            sx: 0,
+            sy: 0,
+            sw: 163,
+            sh: 454,
+            dx: 465,
+            dy: 329,
+            dw: 32.6,
+            dh: 90.8,
+            draw: function(){
+                
+            }
+        }
+
+        const ctrP={
+                x:canvas.width/2,
+                y:canvas.height/2,
+                r:100
+            }
+
+            const oldArea={
+                x:ctrP.x-ctrP.r/2,
+                y:ctrP.y-ctrP.r/2,
+                w:ctrP.r,
+                h:ctrP.r,
+                scale:2
+            }
+
+            const newArea={
+                x:ctrP.x-ctrP.r*oldArea.scale/2,
+                y:ctrP.y-ctrP.r*oldArea.scale/2,
+                w:ctrP.r*oldArea.scale,
+                h:ctrP.r*oldArea.scale
+            }
+            let Lpressed=false;
+            let Rpressed=false;
+            canvas.onmousemove=function(e){
+                ctrP.x=e.clientX-canvas.getBoundingClientRect().left;
+                ctrP.y=e.clientY-canvas.getBoundingClientRect().top;
+
+                Lpressed=true;
+            }
+
+            
+           
+            function move(){
+                oldArea.x=ctrP.x-ctrP.r/2;
+                oldArea.y=ctrP.y-ctrP.r/2;
+                newArea.x=ctrP.x-ctrP.r*oldArea.scale/2;
+                newArea.y=ctrP.y-ctrP.r*oldArea.scale/2;
+            }
+
+            function drawMG(){
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(ctrP.x,ctrP.y,ctrP.r/2,0,Math.PI*2,false);
+                ctx.clip();
+
+                if(Lpressed){
+                    ctx.drawImage(canvas,oldArea.x,oldArea.y,oldArea.w,oldArea.h,newArea.x,newArea.y,newArea.w,newArea.h);
+                }
+                if(Rpressed){
+                    ctx.drawImage(canvas,newArea.x,newArea.y,newArea.w,newArea.h,oldArea.x,oldArea.y,oldArea.w,oldArea.h);
+                }
+                
+                ctx.closePath();
+                ctx.restore();
+
+                ctx.beginPath();
+                let gradient=ctx.createRadialGradient(
+                    ctrP.x,ctrP.y,ctrP.r/2-5,
+                    ctrP.x,ctrP.y,ctrP.r/2);
+                gradient.addColorStop(0,'rgba(0,0,0,0.5)');
+                ctx.strokeStyle=gradient;
+                ctx.arc(ctrP.x,ctrP.y,ctrP.r/2,0,Math.PI*2,false);
+                ctx.stroke();
+            }
+
+            const ball = {
+              x: 100,
+              y: 100,
+              radiusX: 25,
+              radiusY: 25,
+              color: 'red',
+              draw: function() {
+                
+                ctx.beginPath();
+                ctx.ellipse(this.x, this.y, this.radiusX, this.radiusY,0, 0, Math.PI * 2, true);
+                ctx.closePath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = this.color;
+                ctx.stroke();
+              }
+            };
+
+
+
+        
+        
+        var targetScore = 5;//設定最好提示的目標分數 
+        
+        const score = {
+            best:0,
+            value:0,
+            draw: function(){
+                ctx.fillStyle = "black";
+                ctx.strokeStyle = "black";
+                if(status.current == status.game){
+                    ctx.font = "550 28px 微軟正黑體";
+                    ctx.fillText(this.value,495,83,170,30);
+                }
+            }
+        }
+        
+        let stop = false;
+        let over = false;
+
+        const gameStop = {
+            sx: 0,
+            sy: 0,
+            sw: 1233,
+            sh: 350,
+            dx: canvas.width/2-246.6,
+            dy: canvas.height/2-70,
+            dw: 493.2,
+            dh: 140,
+            draw: function(){
+                if(status.current == status.game){
+                    if(countMs <= 999 ||　score.value == 8)
+                    {
+                        ctx.drawImage(gameover_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                        stop = true;
+                        clearInterval(Time);
+                        setInterval(function(){
+                            over = true;
+                        },3000);
+                    }
+                }
+                
+                    
+            }
+       }
+        //設定遊戲結束畫面
+        const gameOver = {
+            sx: 0,
+            sy: 0,
+            sw: 5000,
+            sh: 3333,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current != status.gameOver)
+                        return;//如果不是status.game畫面便離開
+                ctx.drawImage(gameoverBG_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+        //判斷遊戲結果
+        const gameResult = {
+            sx: 0,
+            sy: 0,
+            sw: 5000,
+            sh: 3333,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current != status.gameOver)
+                        return;//如果不是status.game畫面便離開
+                if(score.value >= targetScore){
+                    ctx.drawImage(finishGood_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+                else{
+                    ctx.drawImage(finishNormal_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+            }
+        }
+        var num = 0;//旋轉角度
+        //閃耀特效
+        const shineEffects = {
+            sx: 0,
+            sy: 0,
+            sw: 1403,
+            sh: 1402,
+            dx: 334.4,
+            dy: 79.6,
+            dw: 561.2,
+            dh: 560.8,
+            angle: 0 * Math.PI / 180,
+            draw: function(){
+                if(status.current != status.gameOver)
+                        return;//如果不是status.game畫面便離開
+                ctx.save();
+                ctx.translate(this.dx+this.dw/2, this.dy+this.dw/2);
+                ctx.rotate(this.angle);
+                ctx.translate(-this.dx-this.dw/2, -this.dy-this.dh/2);
+
+                if(score.value >= targetScore){
+                    ctx.drawImage(shineGood_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+                else{
+                    ctx.drawImage(shineNormal_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+                
+                ctx.restore();
+            },
+            update: function(){
+                if(status.current == status.gameOver){
+                    this.angle = num * Math.PI / 180;
+                    num++;
+                }
+            }
+        }
+
+
+        //按鍵的指標判斷
+        canvas.addEventListener('mousemove',function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                console.log("X:",playX,"Y:",playY);
+
+                
+
+                //判斷指標是否在"play"物件上
+                if(playX>getReady.dx && playX<getReady.dx+getReady.dw && playY>getReady.dy && playY<getReady.dy+getReady.dh && status.current == status.getReady && !stopping){
+                     //console.log("move");
+                    flag = true;
+                }
+                else{
+                    flag = false;
+                    
+                }
+                //判斷指標是否在"返回地圖"物件上
+                if(playX>mapList.dx && playX<mapList.dx+mapList.dw && playY>mapList.dy && playY<mapList.dy+mapList.dh && status.current == status.getReady && !stopping){
+                    map = true;
+
+                    console.log(map);
+                }
+                else if(playX>mapList.fx && playX<mapList.fx+mapList.fw && playY>mapList.fy && playY<mapList.fy+mapList.fh&& status.current == status.gameOver && !stopping){
+                    map = true;
+                }
+                else{
+                    map = false;
+                }
+                //判斷指標是否再設定物件上
+                if(playX>music.dx && playX<music.dx+music.dw && playY>music.dy && playY<music.dy+music.dh){
+                    set = true;
+                }
+                else{
+                    set = false;
+                }
+                if(playX>setClose.dx && playX<setClose.dx+setClose.dw && playY>setClose.dy && playY<setClose.dy+setClose.dh ){
+                    close = true;
+                }
+                else{
+                    close = false;
+                }
+                //指標顯現
+                if(map == true ||　flag == true || sHover == true || set == true || close){
+                    canvas.style.cursor = "pointer";
+                }
+                else{
+                    canvas.style.cursor = "unset";
+                }
+
+                play_image.src = flag ? "img/00-遊戲元件/play02.png" : "img/00-遊戲元件/play01.png";
+                
+                //判斷指標是否在"go"物件上
+                if(playX>getStart.dx && playX<getStart.dx+getStart.dw && playY>getStart.dy && playY<getStart.dy+getStart.dh && status.current == status.gameIntro && !stopping){
+                    // console.log(sHover);
+                    sHover = true;
+                }
+                else{
+                    sHover = false;
+                    
+                }
+                start_image.src = sHover ? "img/00-遊戲元件/go02.png" : "img/00-遊戲元件/go01.png";
+
+            });
+
+        let find1 = false;
+        let find2 = false;
+        let find3 = false;
+        let find4 = false;
+        let find5 = false;
+        let find6 = false;
+        let find7 = false;
+        let find8 = false;       
+        
+        var setting = false;
+        var stopping = false;
+        canvas.addEventListener("click",function(e){
+            let playX = e.clientX - canvas.getBoundingClientRect().left;
+            let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+             if(playX>music.dx && playX<music.dx+music.dw && playY>music.dy && playY<music.dy+music.dh){
+                setting = true;
+                stopping = true;
+            }
+            else if(playX>setClose.dx && playX<setClose.dx+setClose.dw && playY>setClose.dy && playY<setClose.dy+setClose.dh){
+                setting = false;
+                stopping = false;
+            }
+
+            //判斷指標是否在"返回地圖"物件上
+                if(playX>mapList.dx && playX<mapList.dx+mapList.dw && playY>mapList.dy && playY<mapList.dy+mapList.dh && status.current == status.getReady && !stopping){
+                    window.location = maplinkText;
+                }
+                else if(playX>mapList.fx && playX<mapList.fx+mapList.fw && playY>mapList.fy && playY<mapList.fy+mapList.fh&& status.current == status.gameOver && !stopping){
+                    window.location = maplinkText;
+                }
+
+            switch(status.current){
+                case status.getReady:
+                    gameStart_audio.play();
+                    if(playX>getReady.dx && playX<getReady.dx+getReady.dw && playY>getReady.dy && playY<getReady.dy+getReady.dh && status.current == status.getReady && !stopping){
+                        status.current = status.gameIntro; 
+                    }
+                    break;
+                case status.gameIntro:
+                    map = false;
+                    flag = false;
+                    if(playX>getStart.dx && playX<getStart.dx+getStart.dw && playY>getStart.dy && playY<getStart.dy+getStart.dh && status.current == status.gameIntro && !stopping){
+                        status.current = status.game;
+                    }   
+                    break;
+                case status.game:
+                    if(!stopping){
+                        if(playX>find12.dx && playX<find12.dx+find12.dw && playY>find12.dy && playY<find12.dy+find12.dh){
+                        if(!find1){
+                            score.value += 1;
+                            find1 = true;
+                            yes_audio.play();
+                        }
+                        
+                        }
+                        else if(playX>find22.dx && playX<find22.dx+find22.dw && playY>find22.dy && playY<find22.dy+find22.dh){
+                            if(!find2){
+                                score.value += 1;
+                                find2 = true;
+                                yes_audio.play();
+                            }
+                            
+                        }
+                        else if(playX>find32.dx && playX<find32.dx+find32.dw && playY>find32.dy && playY<find32.dy+find32.dh){
+                            if(!find3){
+                                score.value += 1;
+                                find3 = true;
+                                yes_audio.play();
+                            }
+                            
+                        }
+                        else if(playX>find42.dx && playX<find42.dx+find42.dw && playY>find42.dy && playY<find42.dy+find42.dh){
+                            if(!find4){
+                                score.value += 1;
+                                find4 = true;
+                                yes_audio.play();
+                            }
+                            
+                        }
+                        else if(playX>find52.dx && playX<find52.dx+find52.dw && playY>find52.dy && playY<find52.dy+find52.dh){
+                            if(!find5){
+                                score.value += 1;
+                                find5 = true;
+                                yes_audio.play();
+                            }
+                            
+                        }
+                        else if(playX>find62.dx && playX<find62.dx+find62.dw && playY>find62.dy && playY<find62.dy+find62.dh){
+                            if(!find6){
+                                score.value += 1;
+                                find6 = true;
+                                yes_audio.play();
+                            }
+                            
+                        }
+                        else if(playX>find72.dx && playX<find72.dx+find72.dw && playY>find72.dy && playY<find72.dy+find72.dh){
+                            if(!find7){
+                                score.value += 1;
+                                find7 = true;
+                                yes_audio.play();
+                            }
+                            
+                        }
+                        else if(playX>find82.dx && playX<find82.dx+find82.dw && playY>find82.dy && playY<find82.dy+find82.dh){
+                            if(!find8){
+                                score.value += 1;
+                                find8 = true;
+                                yes_audio.play();
+                            }
+                            
+                        }
+                        else{
+                            console.log("no");
+                            delTime += 1000;
+                            no_audio.play();
+                        }
+                        
+                    }
+                    break;
+                        
+                case status.gameOver:
+                    status.current = status.getReady;
+                    break;
+            }
+            console.log("status.current:",status.current);
+           
+        });
+
+        let sound = false;
+
+        // canvas.onmousedown=function (e) {
+
+            
+        //     canvas.onmousemove = function(e){
+        //         let playX = e.clientX - canvas.getBoundingClientRect().left;
+        //         let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+        //         //音量調節設定
+        //         if(playX>350 && playX<setBar.max && playY > setBar.dy && playY < setBar.dy +setBar.dh){
+        //             setBar.dx = playX;
+        //             // sound = true;
+        //         }
+        //         else{
+        //             // sound = false;
+        //         }
+                
+        //         if(playX>setBar_BG.min && playX<setBar_BG.max && playY > setBar_BG.dy && playY < setBar_BG.dy +setBar.dh){
+        //             setBar_BG.dx = playX;
+        //             sound = true;
+        //         }
+        //         else{
+        //             sound = false;
+        //         }
+                
+        //     };
+        //     canvas.onmouseup = function(){
+        //         canvas.onmousemove = null;
+        //         canvas.onmouseup = null;
+        //     };
+        // };
+        function soundMgt(){
+            
+            gameStart_audio.play();
+            gameStart_audio.addEventListener("ended",playEndedHandler,false);
+            
+            
+            
+        }
+        function playEndedHandler(){
+            gameStart_audio.play();
+        }
+
+
+        function draw(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            bg.draw();
+            
+            getReady.draw();
+            gameIntro.draw();
+            getStart.draw();
+            game.draw();
+            find11.draw();
+            find12.draw();
+            find21.draw();
+            find22.draw();
+            find31.draw();
+            find32.draw();
+            find41.draw();
+            find42.draw();
+            find51.draw();
+            find52.draw();
+            find61.draw();
+            find62.draw();
+            find71.draw();
+            find72.draw();
+            find81.draw();
+            find82.draw();
+
+            if(!stopping && status.current == status.game){
+                if(find1){
+                    ball.x = find12.dx+50;
+                    ball.y = find12.dy+18;
+                    ball.radiusX = find12.dw;
+                    ball.radiusY = find12.dh;
+                    ball.draw();
+                }
+                if(find2){
+                    
+                    ball.x = find22.dx+25;
+                    ball.y = find22.dy+28;
+                    ball.radiusX = find22.dw-15;
+                    ball.radiusY = find22.dh-25;
+                    ball.draw();
+                }
+                if(find3){
+                    
+                    ball.x = find32.dx+15;
+                    ball.y = find32.dy+15;
+                    ball.radiusX = find32.dw;
+                    ball.radiusY = find32.dh-15;
+                    ball.draw();
+                }
+                if(find4){
+                    
+                    ball.x = find42.dx+33;
+                    ball.y = find42.dy+25;
+                    ball.radiusX = find42.dw-25;
+                    ball.radiusY = find42.dh-15;
+                    ball.draw();
+                }
+                if(find5){
+                    
+                    ball.x = find52.dx+5;
+                    ball.y = find52.dy+3;
+                    ball.radiusX = find52.dw;
+                    ball.radiusY = find52.dh;
+                    ball.draw();
+                }
+                if(find6){
+                    
+                    ball.x = find62.dx+13;
+                    ball.y = find62.dy+15;
+                    ball.radiusX = find62.dw;
+                    ball.radiusY = find62.dh-10;
+                    ball.draw();
+                }
+                if(find7){
+                    
+                    ball.x = find72.dx+13;
+                    ball.y = find72.dy+20;
+                    ball.radiusX = find72.dw;
+                    ball.radiusY = find72.dh-20;
+                    ball.draw();
+                }
+                if(find8){
+                    
+                    ball.x = find82.dx+13;
+                    ball.y = find82.dy+20;
+                    ball.radiusX = find82.dw;
+                    ball.radiusY = find82.dh-20;
+                    ball.draw();
+                }
+            }
+            
+
+            
+            if(status.current == status.game){
+                drawMG();
+            }
+            
+            //倒計時draw
+            if(status.current == status.game){
+                ctx.font = "550 28px 微軟正黑體";
+                ctx.fillText(Math.round(countMs/1000),320,83,170,30);
+            }
+            if(over){//跳轉結果頁面
+                status.current = status.gameOver;
+            }
+            score.draw();
+            
+            gameStop.draw();
+            gameOver.draw();
+
+            shineEffects.draw();
+            gameResult.draw();
+
+            mapList.draw();
+
+            music.draw();
+            if(setting){
+                setBG.draw();
+                setClose.draw();
+                setBar.draw();
+                setBar_BG.draw();
+            }
+        }
+        function update(){
+           // getReady.update();
+           move();
+           soundMgt();
+            shineEffects.update();
+        }
+        function loop(){
+            draw();            
+            update();
+            frames++;
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+      
+        
+        
+
+    </script>
+</body>
+</html>

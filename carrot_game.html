@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>誰偷了金鏟子?</title>
+</head>
+<body>    
+    <canvas id="myCanvas" width="900" height="600">網頁遊戲程式設計</canvas>
+    <script type="text/javascript" src="setting.js"></script>
+    
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: auto;
+            display: block;
+            margin-top: 50px;
+        }
+    </style>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        var Btn=document.getElementById("btn");
+
+        let flag = false;
+        let map = false;
+        let start = false;
+        let sHover = false;
+        var maplinkText="07-map.html";
+
+        //------------------開始畫面載入------------------
+        const index_image = new Image();
+        index_image.src = "img/10-紅蘿蔔園/first_bg.png";//開始背景
+        // const farmer_image = new Image();
+        // farmer_image.src = "img/09-蘋果園/farmer.png";//人物
+        
+        const play_image = new Image();
+        play_image.src = "img/00-遊戲元件/play01.png";//play鍵
+        const leftmap_image = new Image();
+        leftmap_image.src = "img/00-遊戲元件/leftmap.png";//返回地圖(向左)
+        const rightmap_image = new Image();
+        rightmap_image.src = "img/00-遊戲元件/rightmap.png";//返回地圖(向右)
+
+        const intro_image = new Image();
+        intro_image.src = "img/10-紅蘿蔔園/rule.png"//玩法介紹
+        const start_image = new Image();
+        start_image.src = "img/00-遊戲元件/go01.png";//start鍵
+
+        //------------------遊戲時畫面載入------------------
+        const gameBG_image = new Image();
+        gameBG_image.src = "img/10-紅蘿蔔園/gameBG.png";//遊戲時背景
+        const weed_image = new Image();
+        weed_image.src = "img/10-紅蘿蔔園/weed.png"//雜草物件
+        const carrot_image = new Image();
+        carrot_image.src = "img/10-紅蘿蔔園/carrot.png";//carrot14
+        const soil_image = new Image();
+        soil_image.src = "img/10-紅蘿蔔園/soil.png";//土壤物件
+
+        //---------------遊戲結束畫面載入------------------
+        const gameover_image = new Image();
+        gameover_image.src = "img/00-遊戲元件/gameover.png";//game over圖
+        const gameoverBG_image = new Image();
+        gameoverBG_image.src = "img/10-紅蘿蔔園/finishBG.png";//遊戲結束背景
+        const finishNormal_image = new Image();
+        finishNormal_image.src = "img/10-紅蘿蔔園/finishNormal.png";//普通提示
+        const finishGood_image = new Image();
+        finishGood_image.src = "img/10-紅蘿蔔園/finishGood.png";//最佳提示
+        const shineNormal_image = new Image();
+        shineNormal_image.src = "img/00-遊戲元件/shineNormal.png";//普通特效
+        const shineGood_image = new Image();
+        shineGood_image.src = "img/00-遊戲元件/shineGood.png";//普通特效
+
+        
+
+        //遊戲畫面變更計算
+        const status = {
+            current: 0,
+            getReady: 0,
+            gameIntro: 1,
+            game: 2,
+            gameOver: 3
+        }
+        //總秒數每隔一秒就減一秒        
+       let allMs = 30001;
+       var nowMs = 0;
+       var countMs = 30001;
+       let oldMs = new Date().getTime();
+       var delTime = 0;
+       //計時器設定
+         var Time = setInterval(function(){
+            if(countMs > 999 && status.current == status.game && !stopping){
+                let newMs = new Date().getTime();   
+                         
+                countMs = allMs - nowMs - delTime;
+
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                console.log("time:",Math.round(countMs/1000));
+                
+
+                nowMs = newMs - oldMs;
+            }
+            else if(stopping && status.current == status.game && countMs > 999){
+                oldMs += 1000;
+                console.log("oldMs",oldMs);
+            }
+            else{
+                if(countMs > 999)
+                {
+                    oldMs = new Date().getTime();
+                }
+            }
+        },1000); 
+       // var DelY = 30;
+       // var Del = false;
+       // let carrotDel = false;
+       //  var DelTime = setInterval(function(){
+       //      if(carrotDel){
+       //              Del = true;
+       //              DelY-=1;
+       //          }
+       //  },500); 
+       
+
+        //設定初始畫面資訊
+        const bg = {
+            sx: 0,
+            sy: 0,
+            sw: 2500,
+            sh: 1667,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                ctx.drawImage(index_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+       
+        const mapList = {
+            sx: 0,
+            sy: 0,
+            sw: 596,
+            sh: 154,
+            dx: 65,
+            dy: 510,
+            dw: 99,
+            dh: 25,
+            fx: 685,
+            fy: 473,
+            fw: 238.4,
+            fh: 61.6,
+            draw: function(){
+                if(status.current == status.getReady){
+                    ctx.drawImage(leftmap_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+                else if(status.current == status.gameOver){
+                    ctx.drawImage(rightmap_image,this.sx,this.sy,this.sw,this.sh,this.fx,this.fy,this.fw,this.fh);
+                }
+            }
+        }
+        const getReady = {
+            sx: 0,
+            sy: 0,
+            sw: 452,
+            sh: 343,
+            dx: 655,
+            dy: 415,
+            dw: 150.6,
+            dh: 114.3,
+            draw: function(){
+                if(status.current == status.getReady)
+                    ctx.drawImage(play_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+        
+
+        //設定介紹頁面資訊
+        const gameIntro = {
+            sx: 0,
+            sy: 0,
+            sw: 2500,
+            sh: 1667,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current == status.gameIntro)
+                    ctx.drawImage(intro_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+        const getStart = {
+            sx: 0,
+            sy: 0,
+            sw: 326,
+            sh: 244,
+            dx: 540,
+            dy: 360,
+            dw: 125,
+            dh: 95,
+            draw: function(){
+                if(status.current == status.gameIntro)
+                    ctx.drawImage(start_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+
+        //設定遊戲頁面資訊
+        const game = {
+            sx: 0,
+            sy: 0,
+            sw: 2500,
+            sh: 1667,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current == status.game){
+
+                    ctx.drawImage(gameBG_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+
+                
+            }
+        }
+        //紅蘿蔔與土壤物件設定
+        var row = 1;//dx換列遞增
+        var col = 1;//dy換行遞增
+        var colROW = 1;//dy換行時 dx位置變更
+        var countCOL = 1;//計算行數
+        var col1 = Math.round(Math.random() * (0 - 4) + 4);
+        var col2 = Math.round(Math.random() * (5 - 9) + 9);
+        var col3 = Math.round(Math.random() * (10 - 14) + 14);
+        var col4 = Math.round(Math.random() * (15 - 19) + 19);
+        var weedout = false;
+
+
+        // var weedshow = setInterval(function(){
+        //         if(status.current != status.game)
+        //             return;
+        //         alert("hello");
+        //         weedout = true;
+        //         console.log(weedout);
+        //         carrot.draw();
+        //         if(weedout){
+        //             weedout = false;
+        //             console.log(weedout);
+        //         }
+        //     },3000);
+            
+        
+         
+        const carrot = {
+            sx: 0,
+            sy: 0,
+            sw: 121,
+            sh: 155,
+            soilsw: 193,
+            soilsh: 74,
+            weedsw: 116,
+            weedsh: 70,
+            dx: Math.random() * (190 - 210) + 210,
+            dy: Math.random() * (240 - 250) + 250,
+            dw: 48.4,
+            dh: 62,
+            soildw: 77.2,
+            soildh: 29.6,
+            weeddw: 46.4,
+            weeddh: 28,
+            position: [],
+            weedPos: [],
+            draw: function(){
+                if(status.current != status.game)
+                    return;
+                if(!stopping){
+                    for(var i = 0;i < this.position.length; i++){
+                    let topX = this.position[i].x;
+                    let topY = this.position[i].y;
+                    let soilx = this.position[i].soilX;
+                    let weedR = Math.random() * (-1 - 1) + 1;
+                    //console.log("weedR"+weedR);
+
+                  for(var j = 0;j < this.weedPos.length; j++){
+                        let weedX = this.weedPos[j].weedx;
+                        let weedY = this.weedPos[j].weedy;
+                    
+                       //  if(j == col1){
+                       //     //console.log("j"+j);
+                       //    // console.log("weed draw");
+                       //      ctx.drawImage(weed_image,this.sx,this.sy,this.weedsw,this.weedsh,weedX,weedY,this.weeddw,this.weeddh);
+                       // }
+
+
+                        if(Math.ceil(i / 5) == 1){
+                      
+                           if(j == col1){
+                               //console.log("j"+j);
+                                ctx.drawImage(weed_image,this.sx,this.sy,this.weedsw,this.weedsh,weedX,weedY,this.weeddw,this.weeddh);
+                           }
+                        }
+                         else if(Math.ceil(i / 5) == 2){
+                           
+                            if(j == col2){
+                                ctx.drawImage(weed_image,this.sx,this.sy,this.weedsw,this.weedsh,weedX,weedY,this.weeddw,this.weeddh);
+                           }
+                        }
+                        else if(Math.ceil(i / 5) == 3){
+                            if(j == col3){
+                                ctx.drawImage(weed_image,this.sx,this.sy,this.weedsw,this.weedsh,weedX,weedY,this.weeddw,this.weeddh);
+
+                            }
+                        }
+                        else if(Math.ceil(i / 5) == 4){
+                            if(j == col4){
+                                ctx.drawImage(weed_image,this.sx,this.sy,this.weedsw,this.weedsh,weedX,weedY,this.weeddw,this.weeddh);
+
+                            }
+                        }
+                    }
+                   
+                
+
+                    
+                    
+
+                    ctx.drawImage(carrot_image,this.sx,this.sy,this.sw,this.sh,topX,topY,this.dw,this.dh);
+                    ctx.drawImage(soil_image,this.sx,this.sy,this.soilsw,this.soilsh,topX+soilx,topY+50,this.soildw,this.soildh);
+
+
+                    }
+                
+                
+                    
+
+                }
+                
+                
+            },
+            update: function(){
+                if(status.current == status.getReady || this.position.length <= 0 || status.current == status.game){
+                    //console.log("carrot draw");
+                    // if(this.position.length == 0){
+                    //     this.dx = (Math.random() * (190 - 210) + 210);
+                    //     this.dy = Math.random() * (240 - 250) + 250;
+                    //     row = 1;//dx換列遞增
+                    //     col = 1;//dy換行遞增
+                    //     colROW = 1;//dy換行時 dx位置變更
+                    //     countCOL = 1;//計算行數
+                    // }
+                    
+                    //物件出現寬度不超過780
+                    if(this.dx < 750){
+                        
+                        this.position.push({//push進position陣列裡
+                            x:this.dx,
+                            y:this.dy,
+                            soilX: Math.random() * (-30 + 5) - 5
+                        });
+
+                        if(this.position.length > 5){
+                            this.weedPos.push({//push進position陣列裡
+                                weedx:this.dx + Math.random() * (30 - 40) + 40,
+                                weedy:this.dy + Math.random() * (10 - 15) + 15
+                            });
+                        }
+
+                        row += Math.random() * (135 - 145) + 145;
+                        this.dx = Math.random() * (190 - 210) + 210 + row + colROW;
+                        //this.dy = Math.random() * (240 - 250) + 250;
+                        //console.log("第"+col+"行");
+                        //col+=1;
+
+                    }
+                    else if(this.dx > 750 && this.dy < 370){
+                        row = 0;
+                        countCOL += 1;
+                        console.log("第"+countCOL+"行");
+
+                        
+                       
+                        col += Math.random() * (35 - 55) + 55;
+                        colROW -= Math.random() * (25 - 35) + 35;
+                        this.dx = (Math.random() * (190 - 210) + 210) + colROW;
+                        this.dy = Math.random() * (240 - 250) + 250 + col;
+                        // this.dx -= Math.random() * (25 - 35) + 35;
+                         
+                    }
+                    //物件出現高度不超過430
+                    // else if(this.dy < 430){
+                        
+                    //     // this.weedPos.push({//push進position陣列裡
+                    //     //     weedX:this.position[Math.random()*(0-this.position.length)+this.position.length].x,
+                    //     //     weedY:this.position[Math.random()*(0-this.position.length)+this.position.length].y
+                    //     // });
+                    //     this.dx -= Math.random() * (25 - 35) + 35;
+                    //     this.dy += Math.random() * (40 - 55) + 55;
+                    // }
+                    
+                }
+
+               
+                
+            },
+            reset: function (){
+                //this.position = [];
+                col1 = Math.round(Math.random() * (0 - 4) + 4);
+                col2 = Math.round(Math.random() * (5 - 9) + 9);
+                col3 = Math.round(Math.random() * (10 - 14) + 14);
+                col4 = Math.round(Math.random() * (15 - 19) + 19);
+            }
+        }
+        
+        
+        var targetScore = 8;//設定最好提示的目標分數 
+        
+        const score = {
+            best:0,
+            value:0,
+            draw: function(){
+                ctx.fillStyle = "black";
+                ctx.strokeStyle = "black";
+                if(status.current == status.game){
+                    ctx.font = "550 28px 微軟正黑體";
+                    ctx.fillText(this.value,565,83,170,30);
+                }
+            }
+        }
+        
+        let stop = false;
+        let over = false;
+
+        const gameStop = {
+            sx: 0,
+            sy: 0,
+            sw: 1233,
+            sh: 350,
+            dx: canvas.width/2-246.6,
+            dy: canvas.height/2-70,
+            dw: 493.2,
+            dh: 140,
+            draw: function(){
+                if(countMs <= 999 && status.current == status.game)
+                {
+                    ctx.drawImage(gameover_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                    stop = true;
+                    clearInterval(Time);
+                    setInterval(function(){
+                        over = true;
+                    },3000);
+                }
+                    
+            }
+       }
+        //設定遊戲結束畫面
+        const gameOver = {
+            sx: 0,
+            sy: 0,
+            sw: 2500,
+            sh: 1667,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current != status.gameOver)
+                        return;//如果不是status.game畫面便離開
+                ctx.drawImage(gameoverBG_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+        //判斷遊戲結果
+        const gameResult = {
+            sx: 0,
+            sy: 0,
+            sw: 5000,
+            sh: 3333,
+            nw: 2500,
+            nh: 1667,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current != status.gameOver)
+                        return;//如果不是status.game畫面便離開
+                if(score.value >= targetScore){
+                    ctx.drawImage(finishGood_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+                else{
+                    ctx.drawImage(finishNormal_image,this.sx,this.sy,this.nw,this.nh,this.dx,this.dy,this.dw,this.dh);
+                }
+            }
+        }
+        var num = 0;//旋轉角度
+        //閃耀特效
+        const shineEffects = {
+            sx: 0,
+            sy: 0,
+            sw: 1403,
+            sh: 1402,
+            dx: 334.4,
+            dy: 79.6,
+            dw: 560.8,
+            dh: 561.2,
+            angle: 0 * Math.PI / 180,
+            draw: function(){
+                if(status.current != status.gameOver)
+                        return;//如果不是status.game畫面便離開
+                ctx.save();
+                ctx.translate(this.dx+this.dw/2, this.dy+this.dw/2);
+                ctx.rotate(this.angle);
+                ctx.translate(-this.dx-this.dw/2, -this.dy-this.dh/2);
+
+                if(score.value >= targetScore){
+                    ctx.drawImage(shineGood_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+                else{
+                    ctx.drawImage(shineNormal_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+                }
+                
+                ctx.restore();
+            },
+            update: function(){
+                if(status.current == status.gameOver){
+                    this.angle = num * Math.PI / 180;
+                    num++;
+                }
+            }
+        }
+
+        
+
+
+        //按鍵的指標判斷
+        canvas.addEventListener('mousemove',function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                //console.log("X:",playX,"Y:",playY);
+                //判斷指標是否在"play"物件上
+                if(playX>getReady.dx && playX<getReady.dx+getReady.dw && playY>getReady.dy && playY<getReady.dy+getReady.dh && status.current == status.getReady && !stopping){
+                     //console.log("move");
+                    flag = true;
+                }
+                else{
+                    flag = false;
+                    
+                }
+                //判斷指標是否在"返回地圖"物件上
+                if(playX>mapList.dx && playX<mapList.dx+mapList.dw && playY>mapList.dy && playY<mapList.dy+mapList.dh && status.current == status.getReady && !stopping){
+                    map = true;
+
+                    console.log(map);
+                }
+                else if(playX>mapList.fx && playX<mapList.fx+mapList.fw && playY>mapList.fy && playY<mapList.fy+mapList.fh&& status.current == status.gameOver && !stopping){
+                    map = true;
+                }
+                else{
+                    map = false;
+                }
+                //判斷指標是否再設定物件上
+                if(playX>music.dx && playX<music.dx+music.dw && playY>music.dy && playY<music.dy+music.dh){
+                    set = true;
+                }
+                else{
+                    set = false;
+                }
+                 if(playX>setClose.dx && playX<setClose.dx+setClose.dw && playY>setClose.dy && playY<setClose.dy+setClose.dh ){
+                    close = true;
+                }
+                else{
+                    close = false;
+                }
+                //指標顯現
+                if(map == true ||　flag == true || sHover == true|| set == true || close){
+                    canvas.style.cursor = "pointer";
+                }
+                else{
+                    canvas.style.cursor = "unset";
+                }
+
+                play_image.src = flag ? "img/00-遊戲元件/play02.png" : "img/00-遊戲元件/play01.png";
+                
+                //判斷指標是否在"go"物件上
+                if(playX>getStart.dx && playX<getStart.dx+getStart.dw && playY>getStart.dy && playY<getStart.dy+getStart.dh && status.current == status.gameIntro && !stopping){
+                    // console.log(sHover);
+                    sHover = true;
+                }
+                else{
+                    sHover = false;
+                    
+                }
+                start_image.src = sHover ? "img/00-遊戲元件/go02.png" : "img/00-遊戲元件/go01.png";
+
+            });
+
+       
+        var setting = false;
+        var stopping = false;
+        canvas.addEventListener("click",function(e){
+            let playX = e.clientX - canvas.getBoundingClientRect().left;
+            let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+            if(playX>music.dx && playX<music.dx+music.dw && playY>music.dy && playY<music.dy+music.dh){
+                setting = true;
+                stopping = true;
+            }
+            else if(playX>setClose.dx && playX<setClose.dx+setClose.dw && playY>setClose.dy && playY<setClose.dy+setClose.dh){
+                setting = false;
+                stopping = false;
+            }
+
+            //判斷指標是否在"返回地圖"物件上
+            if(playX>mapList.dx && playX<mapList.dx+mapList.dw && playY>mapList.dy && playY<mapList.dy+mapList.dh && status.current == status.getReady && !stopping){
+                    window.location = maplinkText;
+
+            }
+            else if(playX>mapList.fx && playX<mapList.fx+mapList.fw && playY>mapList.fy && playY<mapList.fy+mapList.fh&& status.current == status.gameOver && !stopping){
+                    window.location = maplinkText;
+
+            }
+            switch(status.current){
+                case status.getReady:
+                    gameStart_audio.play();
+                    if(playX>getReady.dx && playX<getReady.dx+getReady.dw && playY>getReady.dy && playY<getReady.dy+getReady.dh && status.current == status.getReady && !stopping){
+                        status.current = status.gameIntro; 
+                    }
+                    break;
+                case status.gameIntro:
+                    map = false;
+                    flag = false;
+                    if(playX>getStart.dx && playX<getStart.dx+getStart.dw && playY>getStart.dy && playY<getStart.dy+getStart.dh && status.current == status.gameIntro && !stopping){
+                        status.current = status.game;
+                    }   
+                    break;
+                case status.game:
+                    if(!stopping){
+                        for(var i = 0;i < carrot.position.length; i++){
+
+                        if(playX >= carrot.position[i].x && playX <= carrot.position[i].x + carrot_image.width/2.5 && playY >= carrot.position[i].y && playY <= carrot.position[i].y + carrot_image.height/2.5 && !over){
+                                //console.log("click",i);
+                                carrot.position.splice(i,1);
+                                delTime += 1000;
+                                no_audio.play();
+                                //carrotDel = true;
+                        }
+
+                        
+                        }
+                        for(var i = 0;i < carrot.weedPos.length; i++){
+
+                            if(playX >= carrot.weedPos[i].weedx && playX <= carrot.weedPos[i].weedx + weed_image.width/2.5 && playY >= carrot.weedPos[i].weedy && playY <= carrot.weedPos[i].weedy + weed_image.height/2.5 && !over){
+                                    console.log("click",i);
+                                    carrot.weedPos.splice(i,1);
+                                    score.value += 1;
+                                    yes_audio.play();
+                                    carrot.reset();
+                                    // carrot.update();
+                                    // carrot.draw();
+                                    //delTime += 1000;
+                                    //carrotDel = true;
+                            }
+
+                            
+                        }
+                    }
+                   
+                    break;
+                case status.gameOver:
+                    status.current = status.getReady;
+                    break;
+            }
+            console.log("status.current:",status.current);
+           
+        });
+        
+        let sound = false;
+
+        canvas.onmousedown=function (e) {
+
+            
+            canvas.onmousemove = function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+                //音量調節設定
+                if(playX>350 && playX<setBar.max && playY > setBar.dy && playY < setBar.dy +setBar.dh){
+                    setBar.dx = playX;
+                    // sound = true;
+                }
+                else{
+                    // sound = false;
+                }
+                
+                if(playX>setBar_BG.min && playX<setBar_BG.max && playY > setBar_BG.dy && playY < setBar_BG.dy +setBar.dh){
+                    setBar_BG.dx = playX;
+                    sound = true;
+                }
+                else{
+                    sound = false;
+                }
+                
+            };
+            canvas.onmouseup = function(){
+                canvas.onmousemove = null;
+                canvas.onmouseup = null;
+            };
+        };
+        function soundMgt(){
+            if(sound){
+                gameStart_audio.play();
+                gameStart_audio.addEventListener("ended",playEndedHandler,false);
+            }
+           
+            
+            
+        }
+        function playEndedHandler(){
+            gameStart_audio.play();
+        }
+
+        function draw(){
+            bg.draw();
+            //fg.draw();
+            getReady.draw();
+            gameIntro.draw();
+            getStart.draw();
+            game.draw();
+            carrot.draw();
+            //weed.draw();
+            
+            //倒計時draw
+            if(status.current == status.game){
+                //console.log("oldMs",oldMs);
+                ctx.font = "550 28px 微軟正黑體";
+                ctx.fillText(Math.round(countMs/1000),320,83,170,30);
+                 
+                // if(Del){
+                   
+                //     ctx.font = "550 20px 微軟正黑體";
+                //     ctx.fillText("-1",360,75,170,DelY);
+                // }
+            }
+            //跳轉結果頁面
+            if(over){
+                status.current = status.gameOver;
+            }
+            score.draw();
+            
+            gameStop.draw();
+            gameOver.draw();
+
+            shineEffects.draw();
+            gameResult.draw();
+
+            mapList.draw();
+            music.draw();
+            if(setting){
+                setBG.draw();
+                setClose.draw();
+                setBar.draw();
+                setBar_BG.draw();
+            }
+        }
+        function update(){
+           // getReady.update();
+            carrot.update();
+            soundMgt();
+            //weed.update();
+            shineEffects.update();
+        }
+        function loop(){
+            draw();            
+            update();
+            frames++;
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+      
+        
+        
+
+    </script>
+</body>
+</html>

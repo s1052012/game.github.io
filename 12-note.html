@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>movie</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0 auto;
+		}
+		canvas{
+			display: block;
+
+			border: 1px solid black;
+			margin-top: 50px;
+		}
+
+	</style>
+</head>
+<body>
+	<canvas id="myCanvas" width="1200" height="800"></canvas>
+    <script src="icon.js"></script>
+    <script type="text/javascript" src="setting.js"></script>
+	<script type="text/javascript">
+        //背景圖
+        const BG = new Image();
+        BG.src = "img/12-記事本/n-1note-note.png";
+
+        //開始推論圖
+        const beginRe = new Image();
+        beginRe.src = "img/12-記事本/n-2begin.png";
+        var beginRelinkText="12-note-refe.html";
+
+        let beginReB = false;
+        //play hover效果  //------------------------開始推論圖-------------------------------
+        function beginRefe(){
+                //ctx.drawImage(圖片, 圖片的x, 圖片的y, 切割的寬度, 切割的高度, 放到畫布的x, 放到畫布的y, 放到畫布的圖片寬度, 放到畫布的圖片高度);
+            ctx.drawImage(beginRe, 0, 0, 475, 305, 860, 90, 210, 120);
+            canvas.addEventListener('mousemove',function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                if(playX>860 && playX<1070 && playY>90 && playY<230){
+                     console.log("beginReMve");
+                    beginReB = true;
+                }
+                else{
+                    beginReB = false;
+                }
+                beginRe.src = beginReB ? "img/12-記事本/n-2begin-hover.png" : "img/12-記事本/n-2begin.png";
+                canvas.style.cursor = beginReB ? "pointer" : "unset";
+
+                drawInfo();
+            });
+
+        }
+
+        //----------------------------連結設定-----------------------------
+        canvas.addEventListener("click", on_click, false);
+        //if the link has been clicked, go to link
+        function on_click(e) {
+            if (rememB)  {
+              window.location = iRememlinkText;//農場主人的記憶連結
+            }
+            if (mapB)  {
+              window.location = iMaplinkText;//農場主人的記憶連結
+            }
+            if (noteB)  {
+              window.location = iNotelinkText;//農場主人的記憶連結
+            }
+
+            if (beginReB)  {
+              window.location = beginRelinkText;//農場主人的記憶連結
+            }
+        }
+
+        canvas.addEventListener("click",function(e){
+            let playX = e.clientX - canvas.getBoundingClientRect().left;
+            let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+            gameStart_audio.play();
+        });
+
+        let sound = false;
+
+        canvas.onmousedown=function (e) {
+
+            
+            canvas.onmousemove = function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+                //音量調節設定
+                if(playX>350 && playX<setBar.max && playY > setBar.dy && playY < setBar.dy +setBar.dh){
+                    setBar.dx = playX;
+                    // sound = true;
+                }
+                else{
+                    // sound = false;
+                }
+                
+                if(playX>setBar_BG.min && playX<setBar_BG.max && playY > setBar_BG.dy && playY < setBar_BG.dy +setBar.dh){
+                    setBar_BG.dx = playX;
+                    sound = true;
+                }
+                else{
+                    sound = false;
+                }
+                
+            };
+            canvas.onmouseup = function(){
+                canvas.onmousemove = null;
+                canvas.onmouseup = null;
+            };
+        };
+        function soundMgt(){
+            if(sound){
+                gameStart_audio.play();
+                gameStart_audio.addEventListener("ended",playEndedHandler,false);
+            }
+           
+            
+            
+        }
+        function playEndedHandler(){
+            gameStart_audio.play();
+        }
+
+        function drawInfo(){
+        	ctx.drawImage(BG, 0, 0, 2395, 1598, 0, 0, 1200, 800);
+            ctx.drawImage(iRemem, 0, 0, 262, 159, 253, 50, 132, 85);
+            ctx.drawImage(iMap, 0, 0, 186, 162, 425, 50, 94, 83);
+            ctx.drawImage(iNote, 0, 0, 175, 180, 570, 50, 88, 90);
+
+            ctx.drawImage(beginRe, 0, 0, 475, 305, 860, 90, 210, 120);
+        }
+        window.onload=function(){    
+        	ctx.drawImage(BG, 0, 0, 2395, 1598, 0, 0, 1200, 800); 
+        	remem();      
+            map();
+            note();
+            soundMgt();
+
+            beginRefe();
+        }
+		
+
+		
+	</script>
+	
+
+</html>

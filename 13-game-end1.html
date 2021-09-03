@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>movie</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0 auto;
+		}
+		canvas{
+			display: block;
+
+			border: 1px solid black;
+			margin-top: 50px;
+		}
+
+	</style>
+</head>
+<body>
+	<canvas id="myCanvas" width="1200" height="800"></canvas>
+    <script type="text/javascript" src="setting.js"></script>
+    <!-- <script src="icon.js"></script> -->
+	<script type="text/javascript">
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        //背景圖
+        const BG = new Image();
+        BG.src = "img/13-遊戲結束/end1-完整畫面.png";
+
+        //開始遊戲圖
+        const beginG = new Image();
+        beginG.src = "img/13-遊戲結束/end-again.png";
+        var beginGlinkText="index.html";
+
+        let beginGB = false;
+        //play hover效果  //------------------------結束推論圖-------------------------------
+        function beginGame(){
+                //ctx.drawImage(圖片, 圖片的x, 圖片的y, 切割的寬度, 切割的高度, 放到畫布的x, 放到畫布的y, 放到畫布的圖片寬度, 放到畫布的圖片高度);
+            ctx.drawImage(beginG, 0, 0, 475, 305, 680, 570, 266, 152);
+            canvas.addEventListener('mousemove',function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+                if(playX>680 && playX<946 && playY>570 && playY<725){
+                     console.log("endReMve");
+                    beginGB = true;
+                }
+                else{
+                    beginGB = false;
+                }
+                beginG.src = beginGB ? "img/13-遊戲結束/end-again-hover.png" : "img/13-遊戲結束/end-again.png";
+                canvas.style.cursor = beginGB ? "pointer" : "unset";
+
+                drawInfo();
+            });
+
+        }
+
+        //----------------------------連結設定-----------------------------
+        //canvas.addEventListener("mousemove", on_mousemove);
+        canvas.addEventListener("click", on_click, false);
+        //if the link has been clicked, go to link
+
+
+        function on_click(e) {
+            if (beginGB)  {
+              window.location = beginGlinkText;//農場主人的記憶連結
+            }
+
+        }
+
+        canvas.addEventListener("click",function(e){
+            let playX = e.clientX - canvas.getBoundingClientRect().left;
+            let playY = e.clientY - canvas.getBoundingClientRect().top;
+
+            gameStart_audio.play();
+
+            });
+        let sound = false;
+
+        canvas.onmousedown=function (e) {
+
+            
+            canvas.onmousemove = function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+                //音量調節設定
+                if(playX>350 && playX<setBar.max && playY > setBar.dy && playY < setBar.dy +setBar.dh){
+                    setBar.dx = playX;
+                    // sound = true;
+                }
+                else{
+                    // sound = false;
+                }
+                
+                if(playX>setBar_BG.min && playX<setBar_BG.max && playY > setBar_BG.dy && playY < setBar_BG.dy +setBar.dh){
+                    setBar_BG.dx = playX;
+                    sound = true;
+                }
+                else{
+                    sound = false;
+                }
+                
+            };
+            canvas.onmouseup = function(){
+                canvas.onmousemove = null;
+                canvas.onmouseup = null;
+            };
+        };
+        function soundMgt(){
+            if(sound){
+                gameStart_audio.play();
+                gameStart_audio.addEventListener("ended",playEndedHandler,false);
+            }
+           
+            
+            
+        }
+        function playEndedHandler(){
+            gameStart_audio.play();
+        }
+
+        function drawInfo(){
+        	ctx.drawImage(BG, 0, 0, 2494, 1661, 0, 0, 1200, 800);
+            ctx.drawImage(beginG, 0, 0, 475, 305, 680, 570, 266, 152);
+
+        }
+        window.onload=function(){    
+        	ctx.drawImage(BG, 0, 0, 2494, 1661, 0, 0, 1200, 800);
+            beginGame();
+            soundMgt();
+        }
+		
+
+		
+	</script>
+	
+
+</html>

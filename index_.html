@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>誰偷了金鏟子?</title>
+</head>
+<body>    
+    <!-- <video id="video1" controls width="980" height="570" autoplay src="img/05-前導動畫/movie.mp4"></video> -->
+
+    <canvas id="myCanvas" width="900" height="600">網頁遊戲程式設計</canvas>
+    <script type="text/javascript" src="setting.js"></script>
+    <script type="text/javascript" src="gameMovie.js"></script>
+
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: auto;
+            display: block;
+            margin-top: 50px;
+        }
+    </style>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        var Btn=document.getElementById("btn");
+       
+        //載入圖像
+        var index_image = new Image();
+        index_image.src = "img/04-封面/封面-03.png";
+        var hand_image = new Image();
+        hand_image.src = "img/04-封面/action_hand.png";
+        var logo_image = new Image();
+        logo_image.src = "img/04-封面/封面-04.png";
+        const play_image = new Image();
+        play_image.src = "img/00-遊戲元件/play01.png";//play鍵
+
+        let flag = false;
+
+        //遊戲畫面變更計算
+        const status = {
+            current: 0,
+            getReady: 0,
+            gameMoive: 1,
+            gameWheel: 2,
+            gameMap: 3,
+            game: 4
+        }
+
+        const bg = {
+            sx: 0,
+            sy: 0,
+            sw: 5000,
+            sh: 3333,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current != status.getReady)
+                    return;
+                ctx.drawImage(index_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+
+        var num = 0;
+        var rotate_change = 0;
+        const hand = {
+            sx: 0,
+            sy: 0,
+            sw: 817,
+            sh: 1062,
+            dx: 290,
+            dy: 60,
+            dw: 148.5,
+            dh: 193,
+            draw: function(){
+                if(status.current != status.getReady)
+                    return;
+
+                //設定手臂擺動角度
+              ctx.save();
+              ctx.translate(430, 230);
+              ctx.rotate(num * Math.PI/180);
+              ctx.translate(-430, -230);
+              ctx.beginPath(); 
+              ctx.drawImage(hand_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+              ctx.restore(); 
+
+                
+            },
+            update: function(){
+              if(num==0){
+                rotate_change = -1;//負轉
+              }
+              else if(num==-45){
+                rotate_change = 1;//正轉
+              }
+              num += rotate_change; //旋轉方向累加
+            }
+        }
+        const logo = {
+            sx: 0,
+            sy: 0,
+            sw: 5000,
+            sh: 3333,
+            dx: 0,
+            dy: 0,
+            dw: canvas.width,
+            dh: canvas.height,
+            draw: function(){
+                if(status.current != status.getReady)
+                    return;
+                ctx.drawImage(logo_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+        const getReady = {
+            sx: 0,
+            sy: 0,
+            sw: 452,
+            sh: 343,
+            dx: 600,
+            dy: 265,
+            dw: 150,
+            dh: 114,
+            draw: function(){
+                if(status.current == status.getReady)
+                    ctx.drawImage(play_image,this.sx,this.sy,this.sw,this.sh,this.dx,this.dy,this.dw,this.dh);
+            }
+        }
+
+        canvas.addEventListener('mousemove',function(e){
+
+            let playX = e.clientX - canvas.getBoundingClientRect().left;
+            let playY = e.clientY - canvas.getBoundingClientRect().top;
+            //console.log(playX);
+            if(playX>getReady.dx && playX<getReady.dx+getReady.dw && playY>getReady.dy && playY<getReady.dy+getReady.dh && status.current == status.getReady){
+                     //console.log("move");
+                    flag = true;
+                }
+                else{
+                    flag = false;
+                    
+                }
+            play_image.src = flag ? "img/00-遊戲元件/play02.png" : "img/00-遊戲元件/play01.png";
+            canvas.style.cursor = flag ? "pointer" : "unset";
+            
+        });
+        var setting = false;
+        var stopping = false;
+        canvas.addEventListener('click',function(e){
+
+            let playX = e.clientX - canvas.getBoundingClientRect().left;
+            let playY = e.clientY - canvas.getBoundingClientRect().top;
+            //console.log(playX);
+
+            //設定開啟與否判定
+            if(playX>music.dx && playX<music.dx+music.dw && playY>music.dy && playY<music.dy+music.dh){
+                setting = true;
+                stopping = true;
+            }
+            else if(playX>setClose.dx && playX<setClose.dx+setClose.dw && playY>setClose.dy && playY<setClose.dy+setClose.dh){
+                setting = false;
+                stopping = false;
+            }
+            
+            //音量調節設定
+            if(playX>setBar.min && playX<setBar.max && playY > setBar.dy && playY < setBar.dy +setBar.dh){
+                setBar.dx = playX;
+            }
+            else if(playX>setBar_BG.min && playX<setBar_BG.max && playY > setBar_BG.dy && playY < setBar_BG.dy +setBar.dh){
+                setBar_BG.dx = playX;
+            }
+
+            
+            switch(status.current){
+                case status.getReady:
+                    gameStart_audio.play();
+                    if(playX>getReady.dx && playX<getReady.dx+getReady.dw && playY>getReady.dy && playY<getReady.dy+getReady.dh && status.current == status.getReady){
+                        status.current = status.gameMoive; 
+                    }
+                    break;
+                case status.gameMoive:
+                    
+                    break;
+                case status.gameWheel:
+                    
+                   
+                    break;
+                case status.gameMap:
+                    
+                    break;
+                case status.game:
+                    
+                    break;
+            }
+            console.log("status.current:",status.current);
+            
+        });
+
+        
+       
+        
+        let sound = false;
+
+        canvas.onmousedown=function (e) {
+
+            
+            canvas.onmousemove = function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+                //音量調節設定
+                if(playX>350 && playX<setBar.max && playY > setBar.dy && playY < setBar.dy +setBar.dh){
+                    setBar.dx = playX;
+                    // sound = true;
+                }
+                else{
+                    // sound = false;
+                }
+                
+                if(playX>setBar_BG.min && playX<setBar_BG.max && playY > setBar_BG.dy && playY < setBar_BG.dy +setBar.dh){
+                    setBar_BG.dx = playX;
+                    sound = true;
+                }
+                else{
+                    sound = false;
+                }
+                
+            };
+            canvas.onmouseup = function(){
+                canvas.onmousemove = null;
+                canvas.onmouseup = null;
+            };
+        };
+
+        function soundMgt(){
+            if(sound){
+                gameStart_audio.play();
+                gameStart_audio.addEventListener("ended",playEndedHandler,false);
+            }
+           
+            
+            
+        }
+        function playEndedHandler(){
+            gameStart_audio.play();
+        }
+        
+        
+        
+        
+        function draw(){
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            bg.draw();
+            hand.draw();
+            logo.draw();
+            getReady.draw();
+
+            movieBG.draw();
+           // movie.draw();
+
+            music.draw();
+            if(setting){
+                setBG.draw();
+                setClose.draw();
+                setBar.draw();
+                setBar_BG.draw();
+            }
+        }
+        function update(){
+            hand.update();
+            soundMgt();
+        }
+        function loop(){
+            draw();
+            update();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+
+    </script>
+</body>
+</html>

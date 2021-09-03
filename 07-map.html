@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>movie</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0 auto;
+		}
+		canvas{
+			display: block;
+
+			border: 1px solid black;
+			margin-top: 50px;
+		}
+
+	</style>
+</head>
+<body>
+	<canvas id="myCanvas" width="1200" height="800"></canvas>
+  <script type="text/javascript" src="setting.js"></script>
+  <script src="icon.js"></script>
+  
+	<script type="text/javascript">
+
+    //蘋果園
+    const apple = new Image();
+    apple.src = "img/07-農場地圖/map-game01.png";
+    //蘋果園連接
+    var applelinkText="apple_game.html";
+    var AlinkX=580;
+    var AlinkY=440;
+    var AlinkWidth=165;
+    var AlinkHeight=115;
+    var appleInLink = false;
+
+    //紅蘿蔔園
+    const rot = new Image();
+    rot.src = "img/07-農場地圖/map-game02.png";
+    //紅蘿蔔園連接
+    var rotlinkText="carrot_game.html";
+    var RlinkX=400;
+    var RlinkY=280;
+    var RlinkWidth=230;
+    var RlinkHeight=123;
+    var rotInLink = false;
+
+    //農場倉庫
+    const find = new Image();
+    find.src = "img/07-農場地圖/map-game03.png";
+    //農場倉庫連接
+    var findlinkText="find_game.html";
+    var FlinkX=360;
+    var FlinkY=550;
+    var FlinkWidth=150;
+    var FlinkHeight=140;
+    var findInLink = false;
+
+		//背景圖
+		const BG = new Image();
+		BG.src = "img/07-農場地圖/map-bg.png";
+
+		
+
+        //----------------------------連結設定-----------------------------
+        canvas.addEventListener("mousemove", on_mousemove);
+        canvas.addEventListener("click", on_click, false);
+        //check if the mouse is over the link and change cursor style
+        function on_mousemove (ev) {
+              let x = ev.x - canvas.getBoundingClientRect().left;
+              let y = ev.y - canvas.getBoundingClientRect().top;
+              //-----------------------蘋果樹連結----------------------
+              if(x>=AlinkX && x <= (AlinkX + AlinkWidth) &&
+                 y>=AlinkY && y<= (AlinkY+AlinkHeight)){
+                  //console.log("moveApple");
+                  //document.body.style.cursor = "pointer";
+                  appleInLink=true;
+              }
+              else{
+                  //document.body.style.cursor = "";
+                  appleInLink=false;
+              }
+
+              //-----------------------紅蘿蔔園連結----------------------
+              if(x>=RlinkX && x <= (RlinkX + RlinkWidth) &&
+                 y>=RlinkY && y<= (RlinkY+RlinkHeight)){
+                  //console.log("moveRot");
+                  
+                  rotInLink=true;
+              }
+              else{
+                  //document.body.style.cursor = "";
+                  rotInLink=false;
+              }
+
+              //-----------------------農場倉庫連結----------------------
+              if(x>=FlinkX && x <= (FlinkX + FlinkWidth) &&
+                 y>=FlinkY && y<= (FlinkY+FlinkHeight)){
+                  console.log("moveFind");
+                  document.body.style.cursor = "pointer";
+                  findInLink=true;
+              }
+              else{
+                  // document.body.style.cursor = "";
+                  findInLink=false;
+              }
+
+              if(appleInLink || rotInLink || findInLink){
+                document.body.style.cursor = "pointer";
+              }
+              else{
+                document.body.style.cursor = "";
+              }
+        }
+        //if the link has been clicked, go to link
+        function on_click(e) {
+            if (rememB)  {
+              window.location = iRememlinkText;//農場主人的記憶連結
+            }
+            if (mapB)  {
+              window.location = iMaplinkText;//農場主人的記憶連結
+            }
+            if (noteB)  {
+              window.location = iNotelinkText;//農場主人的記憶連結
+            }
+
+            if (appleInLink)  {
+              window.location = applelinkText;//蘋果樹連結
+            }
+            if (rotInLink)  {
+              window.location = rotlinkText;//紅蘿蔔園連結
+            }
+            if (findInLink)  {
+              window.location = findlinkText;//紅蘿蔔園連結
+            }
+        }
+
+
+        function drawInfo(){
+        	ctx.drawImage(BG, 0, 0, 2500, 1665, 0, 0, 1200, 800);
+            ctx.drawImage(iRemem, 0, 0, 262, 159, 253, 50, 132, 85);
+            ctx.drawImage(iMap, 0, 0, 186, 162, 425, 50, 94, 83);
+            ctx.drawImage(iNote, 0, 0, 175, 180, 570, 50, 88, 90);
+
+            ctx.drawImage(apple, 0, 0, 320, 235, 570, 435, 165, 115);
+            ctx.drawImage(rot, 0, 0, 470, 245, 385, 270, 230, 123);
+            ctx.drawImage(find, 0, 0, 288, 275, 365, 560, 150, 140);
+        }
+        window.onload=function(){
+        	ctx.drawImage(BG, 0, 0, 2500, 1665, 0, 0, 1200, 800);
+        	  remem();      
+            map();
+            note();
+            soundMgt();
+
+            ctx.drawImage(apple, 0, 0, 320, 235, 570, 435, 165, 115);
+            ctx.drawImage(rot, 0, 0, 470, 245, 385, 270, 230, 123);
+            ctx.drawImage(find, 0, 0, 288, 275, 365, 560, 150, 140);
+        }
+		    
+        canvas.addEventListener("click",function(e){
+            let playX = e.clientX - canvas.getBoundingClientRect().left;
+            let playY = e.clientY - canvas.getBoundingClientRect().top;
+
+            gameStart_audio.play();
+          });
+        let sound = false;
+
+        canvas.onmousedown=function (e) {
+
+            
+            canvas.onmousemove = function(e){
+                let playX = e.clientX - canvas.getBoundingClientRect().left;
+                let playY = e.clientY - canvas.getBoundingClientRect().top;
+            
+                //音量調節設定
+                if(playX>350 && playX<setBar.max && playY > setBar.dy && playY < setBar.dy +setBar.dh){
+                    setBar.dx = playX;
+                    // sound = true;
+                }
+                else{
+                    // sound = false;
+                }
+                
+                if(playX>setBar_BG.min && playX<setBar_BG.max && playY > setBar_BG.dy && playY < setBar_BG.dy +setBar.dh){
+                    setBar_BG.dx = playX;
+                    sound = true;
+                }
+                else{
+                    sound = false;
+                }
+                
+            };
+            canvas.onmouseup = function(){
+                canvas.onmousemove = null;
+                canvas.onmouseup = null;
+            };
+        };
+        function soundMgt(){
+            if(sound){
+                gameStart_audio.play();
+                gameStart_audio.addEventListener("ended",playEndedHandler,false);
+            }
+           
+            
+            
+        }
+        function playEndedHandler(){
+            gameStart_audio.play();
+        }
+
+		
+	</script>
+	
+
+</html>
